@@ -15,6 +15,10 @@ namespace CSGenerator {
             for (int i = 1; i < lines.Length; i++) {
                 var line = lines[i];
 
+                if (string.IsNullOrEmpty(line)) {
+                    continue;
+                }
+
                 Declaration dec = new();
                 dec.parseDeclaration(line);
 

@@ -16,7 +16,7 @@
                 Console.WriteLine("Generating class for '{0}'", s);
                 List<Declaration> declarations = parser.Parse(s);
                 foreach (Declaration d in declarations) {
-                    Console.WriteLine(d.ToString());
+                    Console.Write(d.ToString());
                 }
             }
 

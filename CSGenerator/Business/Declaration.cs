@@ -18,6 +18,8 @@ namespace CSGenerator {
                 return _isFunction;
             }
             set {
+                _isFunction = value;
+
                 if (value) {
                     functionParams = new List<Declaration>();
                     functionReturnType = "null";
@@ -57,8 +59,26 @@ namespace CSGenerator {
                 expectClassDefinition = true;
             }
 
-            if (key.Contains("(")) {
+            if (key.Contains("(") && key.Contains(")")) {
                 this.isFunction = true;
+                key = key.Substring(0, key.IndexOf("("));
+
+                string[] rawParams = Utils.getValueBetweenBrackets(line).Split(',')
+                    .Select(x => x.Trim()).ToArray();
+
+                foreach (string rawParam in rawParams) {
+                    if (string.IsNullOrEmpty(rawParam)) {
+                        continue;
+                    }
+
+                    if (rawParam.Contains("(")) {
+                        throw new Exception("Function parameter cannot contain brackets: " + rawParam);
+                    }
+
+                    Declaration param = new();
+                    param.parseDeclaration(rawParam);
+                    this.functionParams?.Add(param);
+                }
             }
 
             if (key.StartsWith("\t")) {
@@ -98,10 +118,17 @@ namespace CSGenerator {
         }
 
         public override string ToString() {
-            return String.Format("Name: {0}, Type: {1}, IsStatic: {2}, IsPrivate: {3}, " +
-                "IsNullable: {4}, IsFunction: {5}, FunctionParams: {6}, FunctionReturnType: {7}",
-                name, type, isStatic, isPrivate, isNullable, isFunction,
-                functionParams, functionReturnType);
+            StringBuilder sb = new();
+            sb.AppendLine(String.Format("Name: {0}, Type: {1}, IsStatic: {2}, IsPrivate: {3}, " +
+                "IsNullable: {4}, IsFunction: {5}, FunctionReturnType: {6}, Indent: {7}",
+                name, type, isStatic, isPrivate, isNullable, isFunction, functionReturnType, indent));
+            if (isFunction) {
+                foreach (Declaration d in functionParams!) {
+                    sb.Append(" >> " + d.ToString());
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }
