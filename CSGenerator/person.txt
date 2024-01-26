@@ -11,6 +11,6 @@ Address: [Address]
 	ToString(): string
 _GetAll(): List<[Person]>
 _Load(id: int): [Person]
-_Delete(id: int): null
+_Delete(id: int): void
 _Insert(data: [Person]): int
-AddAddress(street: string, houseNo: int, country: int, startDate: datetime, endDate?: datetime): Address
+AddAddress(street: string, houseNo: int, country: int, startDate: datetime, endDate?: datetime): [Address]
