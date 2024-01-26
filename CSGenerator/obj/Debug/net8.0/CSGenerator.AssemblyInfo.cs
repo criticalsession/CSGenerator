@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CSGenerator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7e7f7003e8983f198c0b44f0d7d53e7b37ffca75")]
 [assembly: System.Reflection.AssemblyProductAttribute("CSGenerator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CSGenerator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
