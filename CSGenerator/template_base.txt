@@ -1,0 +1,9 @@
+﻿{{usings}}
+
+namespace Sample {
+	public class {{className}} {
+		{{fields}}
+
+		{{methods}}
+	}
+}
