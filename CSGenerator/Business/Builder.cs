@@ -40,7 +40,7 @@ namespace CSGenerator {
 
             StringBuilder fields = new();
             foreach (var f in c.Fields) {
-                fields.Append(f.Write());
+                fields.Append(f.Write(c.Fields));
             }
             t = t.Replace("{{FIELDS}}\r\n", fields.ToString());
 

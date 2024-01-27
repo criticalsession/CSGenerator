@@ -3,7 +3,8 @@
 [CSGenerator.Samples, Person]
 Age: int
 FullName: string
-CurrentAddress: Address
+Addresses: List<Address>
+CurrentAddress <: Address
 &GetAll(): List<Person>
 &Load(id: int): Person
 &Delete(id: int): void
@@ -27,6 +28,7 @@ Deactivate(): DateTime
 id: int
 Name: string
 _countryCode: string
+CountryCode <:> _countryCode
 &GenerateId(seed: int):int
 (_id: int, _name: string, _countryCode: string): void
 _buildCountryCode(): string

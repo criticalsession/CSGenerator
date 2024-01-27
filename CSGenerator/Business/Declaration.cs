@@ -6,6 +6,8 @@ namespace CSGenerator {
         internal string type;
         internal bool isStatic;
         internal bool isPrivate;
+        internal bool isGetter;
+        internal bool isSetter;
         internal List<Declaration>? functionParams;
         internal string? functionReturnType;
         internal bool isConstructor;
@@ -27,31 +29,40 @@ namespace CSGenerator {
                 }
             }
         }
+
+        internal bool isProperty {
+            get {
+                return isSetter || isGetter;
+            }
+        }
+
         internal Declaration() {
             name = "";
             type = "";
             isStatic = false;
             isPrivate = false;
             isConstructor = false;
+            isSetter = false;
+            isGetter = false;
             _isFunction = false;
         }
 
         internal void parseDeclaration(string line) {
-            if (!line.Contains(":")) {
+            if (!line.Contains(':')) {
                 throw new Exception("Invalid line format: " + line);
             }
 
-            int lastSplit = line.LastIndexOf(":");
+            int lastSplit = line.LastIndexOf(':');
             string key = line.Substring(0, lastSplit).Replace(" ", ""); // don't use trim, need \t
             string val = line.Substring(lastSplit + 1).Trim();
 
-            if (key.Contains("(") && key.Contains(")")) {
+            if (key.Contains('(') && key.Contains(')')) {
                 this.isFunction = true;
-                if (key.StartsWith("(")) {
+                if (key.StartsWith('(')) {
                     this.isConstructor = true;
                     key = "";
                 } else {
-                    key = key.Substring(0, key.IndexOf("("));
+                    key = key.Substring(0, key.IndexOf('('));
                 }
 
                 string[] rawParams = Utils.GetValueBetweenBrackets(line).Split(',')
@@ -62,7 +73,7 @@ namespace CSGenerator {
                         continue;
                     }
 
-                    if (rawParam.Contains("(")) {
+                    if (rawParam.Contains('(')) {
                         throw new Exception("Function parameter cannot contain brackets: " + rawParam);
                     }
 
@@ -82,6 +93,16 @@ namespace CSGenerator {
                 if (this.isFunction) {
                     key = key.Substring(1);
                 }
+            }
+
+            if (key.EndsWith('<')) {
+                this.isGetter = true;
+                key = key.Replace('<', ' ').Trim();
+            }
+
+            if (val.StartsWith('>')) {
+                this.isSetter = true;
+                val = val.Substring(1).Trim();
             }
 
             this.name = key;

@@ -10,9 +10,10 @@ namespace CSGenerator {
         internal IReadOnlyList<FieldStructure> Fields {
             get {
                 List<FieldStructure> fList = [
-                    .. fields.Where(p => !p.isStatic && p.isPrivate && p.name.Contains('_')),
-                    .. fields.Where(p => !p.isStatic && p.isPrivate && !p.name.Contains('_')),
-                    .. fields.Where(p => !p.isStatic && !p.isPrivate),
+                    .. fields.Where(p => !p.isStatic && p.isPrivate && p.name.Contains('_') && !p.IsProperty),
+                    .. fields.Where(p => !p.isStatic && p.isPrivate && !p.name.Contains('_') && !p.IsProperty),
+                    .. fields.Where(p => !p.isStatic && !p.isPrivate && !p.IsProperty),
+                    .. fields.Where(p => !p.isStatic && p.IsProperty),
                 ];
 
                 return fList;
@@ -67,24 +68,70 @@ namespace CSGenerator {
             internal string type;
             internal bool isStatic;
             internal bool isPrivate;
+            internal bool isSetter;
+            internal bool isGetter;
+
+            internal bool IsProperty {
+                get {
+                    return isSetter || isGetter;
+                }
+            }
 
             internal FieldStructure(Declaration dec) {
                 name = dec.name;
                 type = dec.type;
                 isStatic = dec.isStatic;
                 isPrivate = dec.isPrivate;
+                isGetter = dec.isGetter;
+                isSetter = dec.isSetter;
             }
 
-            internal string Write() {
+            internal string Write(IReadOnlyList<FieldStructure> classFields) {
                 StringBuilder sb = new();
 
                 if (isPrivate) sb.Append("private ");
                 else sb.Append("public ");
 
-                if (isStatic) sb.Append("static ");
+                if (IsProperty) {
+                    var matchingField = classFields.FirstOrDefault(x => x.name.ToLower().Replace("_", "").Equals(type.ToLower()) ||
+                        x.name.ToLower().Equals(type.ToLower()));
+                    if (matchingField != null) {
+                        type = matchingField.type;
+                    }
 
-                sb.Append(type + " ");
-                sb.AppendLine(name + ";");
+                    sb.Append(type + " " + name + " { ");
+
+                    if (isGetter) {
+                        sb.AppendLine("get {");
+
+                        if (matchingField != null) {
+                            sb.AppendLine("return " + matchingField.name + ";");
+                        } else {
+                            sb.AppendLine("throw new NotImplementedException();");
+                        }
+
+                        sb.AppendLine("}");
+                    }
+
+                    if (isSetter) {
+                        sb.AppendLine("set {");
+
+                        if (matchingField != null) {
+                            sb.AppendLine(matchingField.name + " = value;");
+                        } else {
+                            sb.AppendLine("throw new NotImplementedException();");
+                        }
+
+                        sb.AppendLine("}");
+                    }
+
+                    sb.AppendLine("}");
+                } else {
+                    if (isStatic) sb.Append("static ");
+
+                    sb.Append(type + " ");
+                    sb.AppendLine(name + ";");
+                }
 
                 return sb.ToString();
             }
