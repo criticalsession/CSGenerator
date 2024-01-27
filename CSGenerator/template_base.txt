@@ -4,6 +4,8 @@ namespace Sample
 {
 	public class {{CLASS_NAME}} 
 	{
+		{{SUB_CLASSES}}
+
 		{{FIELDS}}
 
 		{{METHODS}}

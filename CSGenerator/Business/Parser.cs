@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static CSGenerator.Utils;
+﻿using static CSGenerator.Utils;
 
 namespace CSGenerator {
     internal class Parser {
@@ -12,7 +7,9 @@ namespace CSGenerator {
         internal List<Declaration> declarations = new();
 
         internal List<Declaration> Parse(string filePath) {
-            var lines = readFile(filePath);
+            var lines = readFile(filePath)
+                .Where(p => !string.IsNullOrEmpty(p) && !p.Trim().StartsWith("//"))
+                .ToArray();
 
             string classDeclaration = lines[0].Replace("[", "").Replace("]", "").Trim();
             if (!classDeclaration.Contains(":")) {
@@ -25,10 +22,6 @@ namespace CSGenerator {
 
             for (int i = 1; i < lines.Length; i++) {
                 var line = lines[i];
-
-                if (string.IsNullOrEmpty(line)) {
-                    continue;
-                }
 
                 Declaration dec = new();
                 dec.parseDeclaration(line);

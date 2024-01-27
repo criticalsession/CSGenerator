@@ -17,10 +17,6 @@ namespace CSGenerator {
 
                 Builder builder = new();
                 builder.Build(parser);
-
-                //foreach (Declaration d in declarations) {
-                //    Console.Write(d.ToString());
-                //}
             }
 
             Console.WriteLine();

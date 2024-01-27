@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace CSGenerator {
     internal class Declaration {
@@ -10,9 +6,10 @@ namespace CSGenerator {
         internal string type;
         internal bool isStatic;
         internal bool isPrivate;
-        internal bool isNullable;
-        internal int indent;
+        internal List<Declaration>? functionParams;
+        internal string? functionReturnType;
         private bool _isFunction;
+
         internal bool isFunction {
             get {
                 return _isFunction;
@@ -29,35 +26,22 @@ namespace CSGenerator {
                 }
             }
         }
-
-        internal List<Declaration>? functionParams;
-        internal string? functionReturnType;
-
         internal Declaration() {
             name = "";
             type = "";
-            indent = 0;
             isStatic = false;
             isPrivate = false;
-            isNullable = false;
             _isFunction = false;
         }
 
-        internal bool parseDeclaration(string line) {
+        internal void parseDeclaration(string line) {
             if (!line.Contains(":")) {
                 throw new Exception("Invalid line format: " + line);
             }
 
-            bool expectClassDefinition = false;
-
             int lastSplit = line.LastIndexOf(":");
-            string key = line.Substring(0, lastSplit).Trim();
+            string key = line.Substring(0, lastSplit).Replace(" ", ""); // don't use trim, need \t
             string val = line.Substring(lastSplit + 1).Trim();
-
-            if (val.Contains("[")) {
-                val = val.Replace("[", "").Replace("]", "").Trim();
-                expectClassDefinition = true;
-            }
 
             if (key.Contains("(") && key.Contains(")")) {
                 this.isFunction = true;
@@ -81,26 +65,9 @@ namespace CSGenerator {
                 }
             }
 
-            if (key.StartsWith("\t")) {
-                for (int i = 0; i < key.Length; i++) {
-                    if (key[i] == '\t') {
-                        this.indent++;
-                    } else {
-                        break;
-                    }
-                }
-
-                key = key.Replace("\t", "");
-            }
-
             if (key.StartsWith("_")) {
                 this.isStatic = true;
                 key = key.Substring(1);
-            }
-
-            if (key.EndsWith("?")) {
-                this.isNullable = true;
-                key = key.Substring(0, key.Length - 1);
             }
 
             if (char.IsLower(key[0])) {
@@ -113,15 +80,13 @@ namespace CSGenerator {
             } else {
                 this.type = val;
             }
-
-            return expectClassDefinition;
         }
 
         public override string ToString() {
             StringBuilder sb = new();
             sb.AppendLine(String.Format("Name: {0}, Type: {1}, IsStatic: {2}, IsPrivate: {3}, " +
-                "IsNullable: {4}, IsFunction: {5}, FunctionReturnType: {6}, Indent: {7}",
-                name, type, isStatic, isPrivate, isNullable, isFunction, functionReturnType, indent));
+                "IsFunction: {4}, FunctionReturnType: {5}",
+                name, type, isStatic, isPrivate, isFunction, functionReturnType));
             if (isFunction) {
                 foreach (Declaration d in functionParams!) {
                     sb.Append(" >> " + d.ToString());

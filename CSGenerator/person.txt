@@ -1,16 +1,24 @@
-﻿[Person:base]
+﻿// Sample: Person class with Address sub-class
+[Person:base]
 Age: int
 FullName: string
-Address: [Address]
-	street: string
-	houseNo: int
-	country: int
-	active: boolean
-	startDate: datetime
-	endDate: datetime
-	ToString(): string
-_GetAll(): List<[Person]>
-_Load(id: int): [Person]
+CurrentAddress: Address
+_GetAll(): List<Person>
+_Load(id: int): Person
 _Delete(id: int): void
-_Insert(data: [Person]): int
-AddAddress(street: string, houseNo: int, country: int, startDate: datetime, endDate?: datetime): [Address]
+_Insert(data: Person): int
+AddAddress(street: string, houseNo: int, country: int, startDate: DateTime, endDate: DateTime?): Address
+
+// [Person.Address]
+// street: string
+// houseNo: int
+// country: Country
+// active: bool
+// startDate: DateTime
+// endDate: DateTime
+// ToString(): string
+// 
+// [Person.Address.Country]
+// id: Guid
+// countryName: string
+// languages: string[]
