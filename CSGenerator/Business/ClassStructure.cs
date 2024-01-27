@@ -60,7 +60,10 @@ namespace CSGenerator {
                 isStatic = dec.isStatic;
                 isPrivate = dec.isPrivate;
                 isConstructor = dec.isConstructor;
-                functionReturnType = String.IsNullOrEmpty(dec.functionReturnType) ? "void" : dec.functionReturnType;
+                functionReturnType = 
+                    String.IsNullOrEmpty(dec.functionReturnType) || dec.functionReturnType.ToLower() == "null" 
+                    ? "void" 
+                    : dec.functionReturnType;
 
                 if (dec.functionParams != null) {
                     foreach (var p in dec.functionParams) {
