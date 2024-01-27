@@ -4,8 +4,11 @@ namespace CSGenerator {
         static void Main(string[] args) {
             try {
                 if (args.Length == 0) {
+#if DEBUG
+                    args = ["./samples/person.txt", "./samples/country.txt"];
+#else
                     throw new Exception("At least one file is required.");
-                    //args = ["./samples/person.txt", "./samples/country.txt"];
+#endif
                 }
 
                 foreach (string s in args) {
