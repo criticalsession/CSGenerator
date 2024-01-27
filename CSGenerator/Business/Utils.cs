@@ -10,6 +10,10 @@ namespace CSGenerator {
             return File.ReadAllLines(filePath);
         }
 
+        internal static string readTemplate(string templateName) {
+            return File.ReadAllText("./template_" + templateName + ".txt");
+        }
+
         internal static string getValueBetweenBrackets(string line) {
             if (!line.Contains("(") || !line.Contains(")")) {
                 throw new Exception("No brackets found in line: " + line);
