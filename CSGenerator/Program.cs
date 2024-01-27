@@ -7,9 +7,7 @@ namespace CSGenerator {
                 //Console.ReadLine();
                 //return;
 
-                args = [
-                    @"C:\Users\amant\source\repos\CSGenerator\CSGenerator\bin\Debug\net8.0\person.txt"
-                ];
+                args = ["./person.txt"];
             }
 
             Parser parser = new();

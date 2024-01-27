@@ -1,7 +1,9 @@
 ﻿{{USINGS}}
 
-namespace Sample {
-	public class {{CLASS_NAME}} {
+namespace Sample 
+{
+	public class {{CLASS_NAME}} 
+	{
 		{{FIELDS}}
 
 		{{METHODS}}
