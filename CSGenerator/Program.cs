@@ -1,4 +1,5 @@
-﻿namespace CSGenerator {
+﻿
+namespace CSGenerator {
     internal class Program {
         static void Main(string[] args) {
             if (args.Length == 0) {
@@ -14,10 +15,14 @@
             Parser parser = new();
             foreach (string s in args) {
                 Console.WriteLine("Generating class for '{0}'", s);
-                List<Declaration> declarations = parser.Parse(s);
-                foreach (Declaration d in declarations) {
-                    Console.Write(d.ToString());
-                }
+                parser.Parse(s);
+
+                Builder builder = new();
+                builder.Build(parser);
+
+                //foreach (Declaration d in declarations) {
+                //    Console.Write(d.ToString());
+                //}
             }
 
             Console.WriteLine();

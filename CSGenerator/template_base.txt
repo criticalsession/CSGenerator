@@ -1,9 +1,9 @@
-﻿{{usings}}
+﻿{{USINGS}}
 
 namespace Sample {
-	public class {{className}} {
-		{{fields}}
+	public class {{CLASS_NAME}} {
+		{{FIELDS}}
 
-		{{methods}}
+		{{METHODS}}
 	}
 }
