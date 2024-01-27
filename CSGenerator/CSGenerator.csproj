@@ -14,6 +14,9 @@
     <None Update="samples\person.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="templates\template_sample_class.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="templates\template_sample.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

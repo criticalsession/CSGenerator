@@ -8,15 +8,17 @@ CurrentAddress: Address
 &Load(id: int): Person
 &Delete(id: int): void
 &Insert(data: Person): int
-AddAddress(street: string, houseNo: int, country: int, startDate: DateTime, endDate: DateTime?): Address
+AddAddress(street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): Address
 (): void
 (age: int, firstName: string, lastName: string): void
 
 // [Person.Address]
-// street: string
-// houseNo: int
-// country: Country
-// active: bool
-// startDate: DateTime
-// endDate: DateTime
-// ToString(): string
+// Street: string
+// HouseNo: int
+// countryId: int
+// StartDate: DateTime
+// EndDate: DateTime?
+// IsActive: bool
+// GetCountry(): Country
+// Deactivate(): DateTime
+// (street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): void

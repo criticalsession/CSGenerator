@@ -4,7 +4,7 @@ namespace CSGenerator {
     internal class Parser {
         internal string rootClassName = "";
         internal string rootNamespace = "";
-        internal string templateString = "";
+        internal string templateName = "";
         internal List<Declaration> declarations = new();
         internal ClassStructure? rootClass;
 
@@ -17,7 +17,6 @@ namespace CSGenerator {
                 throw new Exception("This file is empty.");
             }
 
-            string templateName = "";
             if (lines[0].StartsWith("@")) {
                 templateName = lines[0].Replace("@", "").Trim();
             }
@@ -25,8 +24,7 @@ namespace CSGenerator {
             if (string.IsNullOrEmpty(templateName)) {
                 throw new Exception("No template declaration found. Usage example: @base will load template_base.txt.");
             }
-            templateString = ReadTemplate(templateName.Trim());
-
+            
             if (!lines[1].StartsWith("[") || !lines[1].Contains("]") || 
                 lines[1].Contains(":")) {
                 throw new Exception("No root class declaration found. Usage example: [Person] will create a Person root class.");

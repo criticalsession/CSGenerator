@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection.Metadata.Ecma335;
+using System.Text;
 
 namespace CSGenerator {
     internal class Builder {
@@ -7,9 +8,9 @@ namespace CSGenerator {
                 throw new Exception("Root class structure is null. This shouldn't happen.");
             }
 
-            string t = "// Generated using CSGenerator v1.0: https://github.com/criticalsession/csgenerator" + 
-                Environment.NewLine + p.templateString;
-            t = t.Replace("{{CLASS_NAME}}", p.rootClass.ClassName);
+            string mainTemplateString = Utils.ReadTemplate(p.templateName);
+            string t = "// Generated using CSGenerator v1.0: https://github.com/criticalsession/csgenerator" +
+                Environment.NewLine + mainTemplateString;
             t = t.Replace("{{NAMESPACE}}", p.rootNamespace);
 
             StringBuilder usings = new();
@@ -20,20 +21,7 @@ namespace CSGenerator {
             usings.AppendLine("using System.Threading.Tasks;");
             t = t.Replace("{{USINGS}}", usings.ToString());
 
-            StringBuilder fields = new();
-            foreach (var f in p.rootClass.Fields) {
-                fields.Append(f.Write());
-            }
-            t = t.Replace("{{FIELDS}}", fields.ToString());
-
-            StringBuilder methods = new();
-            foreach (var m in p.rootClass.Methods) {
-                methods.Append(m.Write(p.rootClass.Fields));
-            }
-            t = t.Replace("{{METHODS}}", methods.ToString());
-
-            StringBuilder subClasses = new();
-            t = t.Replace("{{SUB_CLASSES}}", subClasses.ToString());
+            t = t.Replace("{{CLASS}}", BuildClass(p.rootClass, p.templateName));
 
             if (!Directory.Exists(Utils.GetOutDirectory()))
                 Directory.CreateDirectory(Utils.GetOutDirectory());
@@ -42,6 +30,28 @@ namespace CSGenerator {
             File.WriteAllText(path, t);
 
             return path;
+        }
+
+        internal string BuildClass(ClassStructure c, string templateName) {
+            string t = Utils.ReadTemplate(templateName + "_class");
+            t = t.Replace("{{CLASS_NAME}}", c.ClassName);
+
+            StringBuilder fields = new();
+            foreach (var f in c.Fields) {
+                fields.Append(f.Write());
+            }
+            t = t.Replace("{{FIELDS}}", fields.ToString());
+
+            StringBuilder methods = new();
+            foreach (var m in c.Methods) {
+                methods.Append(m.Write(c.Fields));
+            }
+            t = t.Replace("{{METHODS}}", methods.ToString());
+
+            StringBuilder subClasses = new();
+            t = t.Replace("{{SUB_CLASSES}}", subClasses.ToString());
+
+            return t;
         }
     }
 }
