@@ -1,8 +1,8 @@
 ﻿public class {{CLASS_NAME}} 
 {
-	{{SUB_CLASSES}}
-
 	{{FIELDS}}
-
+	
 	{{METHODS}}
+
+	{{SUB_CLASSES}}
 }

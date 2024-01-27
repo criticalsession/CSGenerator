@@ -42,19 +42,19 @@ namespace CSGenerator {
             foreach (var f in c.Fields) {
                 fields.Append(f.Write());
             }
-            t = t.Replace("{{FIELDS}}", fields.ToString());
+            t = t.Replace("{{FIELDS}}\r\n", fields.ToString());
 
             StringBuilder methods = new();
             foreach (var m in c.Methods) {
                 methods.Append(m.Write(c.Fields));
             }
-            t = t.Replace("{{METHODS}}", methods.ToString());
+            t = t.Replace("{{METHODS}}\r\n", methods.ToString());
 
             StringBuilder subClasses = new();
             foreach (var s in c.subClasses) {
                 subClasses.AppendLine(BuildClass(s, templateName));
             }
-            t = t.Replace("{{SUB_CLASSES}}", subClasses.ToString());
+            t = t.Replace("{{SUB_CLASSES}}\r\n", subClasses.ToString());
 
             return t;
         }
