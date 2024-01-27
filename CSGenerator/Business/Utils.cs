@@ -49,7 +49,7 @@ namespace CSGenerator {
             string templatePath = Path.Combine(exeDirectory, "templates", "template_" + templateName + ".txt");
 
             if (!File.Exists(templatePath)) {
-                throw new Exception("Template " + templateName + " (templates/template_" + templateName + ".txt) does not exist.");
+                throw new Exception("Template \"" + templateName + "\" (\"templates/template_" + templateName + ".txt\") does not exist.");
             }
 
             return templatePath;
