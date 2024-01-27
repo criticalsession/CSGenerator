@@ -3,6 +3,10 @@
 namespace CSGenerator {
     internal class Builder {
         internal string Build(Parser p) {
+            if (p.rootClass == null) {
+                throw new Exception("Root class structure is null. This shouldn't happen.");
+            }
+
             string t = p.templateString;
             t = t.Replace("{{CLASS_NAME}}", p.rootClass.ClassName);
 
