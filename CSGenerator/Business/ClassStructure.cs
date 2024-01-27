@@ -14,6 +14,7 @@ namespace CSGenerator {
             }
 
             foreach (var m in decs.Where(p => p.isFunction)) {
+                if (m.isConstructor) m.name = ClassName;
                 Methods.Add(new MethodStructure(m));
             }
         }
@@ -31,7 +32,7 @@ namespace CSGenerator {
                 isPrivate = dec.isPrivate;
             }
 
-            public override string ToString() {
+            internal string Write() {
                 StringBuilder sb = new();
 
                 if (isPrivate) sb.Append("private ");
@@ -50,6 +51,7 @@ namespace CSGenerator {
             internal string name;
             internal bool isStatic;
             internal bool isPrivate;
+            internal bool isConstructor;
             internal List<FieldStructure> functionParams = new();
             internal string functionReturnType;
 
@@ -57,6 +59,7 @@ namespace CSGenerator {
                 name = dec.name;
                 isStatic = dec.isStatic;
                 isPrivate = dec.isPrivate;
+                isConstructor = dec.isConstructor;
                 functionReturnType = String.IsNullOrEmpty(dec.functionReturnType) ? "void" : dec.functionReturnType;
 
                 if (dec.functionParams != null) {
@@ -67,24 +70,37 @@ namespace CSGenerator {
                 }
             }
 
-            public override string ToString() {
+            internal string Write(List<FieldStructure> classFields) {
                 StringBuilder sb = new();
 
                 if (isPrivate) sb.Append("private ");
                 else sb.Append("public ");
 
-                if (isStatic) sb.Append("static ");
-
-                sb.Append(functionReturnType + " ");
+                if (!isConstructor) {
+                    if (isStatic) sb.Append("static ");
+                    sb.Append(functionReturnType + " ");
+                }
 
                 sb.Append(name + "(");
                 if (functionParams != null) {
-                    sb.Append(String.Join(',', functionParams.Select(d => d.type + " " + d.name)));
+                    sb.Append(String.Join(',', functionParams.Select(x => x.type + " " + x.name)));
                 }
                 sb.AppendLine(")");
                 sb.AppendLine("{");
-                sb.Append("throw new NotImplementedException();");
-                sb.AppendLine("}");
+                if (!isConstructor) {
+                    sb.Append("throw new NotImplementedException();");
+                } else if (functionParams != null) {
+                    foreach (var p in functionParams) {
+                        var matching = classFields
+                            .FirstOrDefault(x => x.type.Equals(p.type) && x.name.ToLower().Equals(p.name.ToLower()));
+
+                        if (matching != null) {
+                            sb.AppendLine(String.Format("this.{0} = {1};", matching.name, p.name));
+                        }
+                    }
+                }
+
+                sb.AppendLine("}\n");
 
                 return sb.ToString();
             }

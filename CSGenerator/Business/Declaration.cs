@@ -8,6 +8,7 @@ namespace CSGenerator {
         internal bool isPrivate;
         internal List<Declaration>? functionParams;
         internal string? functionReturnType;
+        internal bool isConstructor;
         private bool _isFunction;
 
         internal bool isFunction {
@@ -31,6 +32,7 @@ namespace CSGenerator {
             type = "";
             isStatic = false;
             isPrivate = false;
+            isConstructor = false;
             _isFunction = false;
         }
 
@@ -45,7 +47,12 @@ namespace CSGenerator {
 
             if (key.Contains("(") && key.Contains(")")) {
                 this.isFunction = true;
-                key = key.Substring(0, key.IndexOf("("));
+                if (key.StartsWith("(")) {
+                    this.isConstructor = true;
+                    key = "";
+                } else {
+                    key = key.Substring(0, key.IndexOf("("));
+                }
 
                 string[] rawParams = Utils.getValueBetweenBrackets(line).Split(',')
                     .Select(x => x.Trim()).ToArray();
@@ -70,7 +77,7 @@ namespace CSGenerator {
                 key = key.Substring(1);
             }
 
-            if (char.IsLower(key[0])) {
+            if (!this.isConstructor && char.IsLower(key[0])) {
                 this.isPrivate = true;
             }
 

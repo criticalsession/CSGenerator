@@ -8,6 +8,8 @@ _Load(id: int): Person
 _Delete(id: int): void
 _Insert(data: Person): int
 AddAddress(street: string, houseNo: int, country: int, startDate: DateTime, endDate: DateTime?): Address
+(): void
+(age: int, firstName: string, lastName: string): void
 
 // [Person.Address]
 // street: string

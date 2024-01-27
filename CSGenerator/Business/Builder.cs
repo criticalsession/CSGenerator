@@ -20,13 +20,16 @@ namespace CSGenerator {
 
             StringBuilder fields = new();
             foreach (var f in p.rootClass.Fields) {
-                fields.Append(f.ToString());
+                fields.Append(f.Write());
             }
             t = t.Replace("{{FIELDS}}", fields.ToString());
 
             StringBuilder methods = new();
-            foreach (var m in p.rootClass.Methods) {
-                methods.Append(m.ToString());
+            foreach (var m in p.rootClass.Methods.Where(x => x.isConstructor)) {
+                methods.Append(m.Write(p.rootClass.Fields));
+            }
+            foreach (var m in p.rootClass.Methods.Where(x => !x.isConstructor)) {
+                methods.Append(m.Write(p.rootClass.Fields));
             }
             t = t.Replace("{{METHODS}}", methods.ToString());
 
