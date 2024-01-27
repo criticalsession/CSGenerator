@@ -27,10 +27,7 @@ namespace CSGenerator {
             t = t.Replace("{{FIELDS}}", fields.ToString());
 
             StringBuilder methods = new();
-            foreach (var m in p.rootClass.Methods.Where(x => x.isConstructor)) {
-                methods.Append(m.Write(p.rootClass.Fields));
-            }
-            foreach (var m in p.rootClass.Methods.Where(x => !x.isConstructor)) {
+            foreach (var m in p.rootClass.Methods) {
                 methods.Append(m.Write(p.rootClass.Fields));
             }
             t = t.Replace("{{METHODS}}", methods.ToString());

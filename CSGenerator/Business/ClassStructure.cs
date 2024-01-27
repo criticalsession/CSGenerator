@@ -3,19 +3,45 @@
 namespace CSGenerator {
     internal class ClassStructure {
         internal string ClassName = "";
-        internal List<FieldStructure> Fields = new();
-        internal List<MethodStructure> Methods = new();
+        private List<FieldStructure> fields = new();
+        private List<MethodStructure> methods = new();
+
+        internal IReadOnlyList<FieldStructure> Fields {
+            get {
+                List<FieldStructure> fList = [
+                    .. fields.Where(p => !p.isStatic && p.isPrivate && p.name.Contains('_')),
+                    .. fields.Where(p => !p.isStatic && p.isPrivate && !p.name.Contains('_')),
+                    .. fields.Where(p => !p.isStatic && !p.isPrivate),
+                ];
+
+                return fList;
+            }
+        }
+
+        internal IReadOnlyList<MethodStructure> Methods {
+            get {
+                List<MethodStructure> mList =
+                [
+                    .. methods.Where(p => p.isConstructor),
+                    .. methods.Where(p => !p.isConstructor && !p.isStatic && p.isPrivate),
+                    .. methods.Where(p => !p.isConstructor && !p.isStatic && !p.isPrivate),
+                    .. methods.Where(p => !p.isConstructor && p.isStatic),
+                ];
+
+                return mList;
+            }
+        }
 
         internal ClassStructure(string className, List<Declaration> decs) {
             ClassName = className;
 
             foreach (var f in decs.Where(p => !p.isFunction)) {
-                Fields.Add(new FieldStructure(f));
+                fields.Add(new FieldStructure(f));
             }
 
             foreach (var m in decs.Where(p => p.isFunction)) {
                 if (m.isConstructor) m.name = ClassName;
-                Methods.Add(new MethodStructure(m));
+                methods.Add(new MethodStructure(m));
             }
         }
 
@@ -60,9 +86,9 @@ namespace CSGenerator {
                 isStatic = dec.isStatic;
                 isPrivate = dec.isPrivate;
                 isConstructor = dec.isConstructor;
-                functionReturnType = 
-                    String.IsNullOrEmpty(dec.functionReturnType) || dec.functionReturnType.ToLower() == "null" 
-                    ? "void" 
+                functionReturnType =
+                    String.IsNullOrEmpty(dec.functionReturnType) || dec.functionReturnType.ToLower() == "null"
+                    ? "void"
                     : dec.functionReturnType;
 
                 if (dec.functionParams != null) {
@@ -73,7 +99,7 @@ namespace CSGenerator {
                 }
             }
 
-            internal string Write(List<FieldStructure> classFields) {
+            internal string Write(IReadOnlyList<FieldStructure> classFields) {
                 StringBuilder sb = new();
 
                 if (isPrivate) sb.Append("private ");
@@ -95,7 +121,7 @@ namespace CSGenerator {
                 } else if (functionParams != null) {
                     foreach (var fParam in functionParams) {
                         var matching = classFields
-                            .FirstOrDefault(x => x.type.Equals(fParam.type) && 
+                            .FirstOrDefault(x => x.type.Equals(fParam.type) &&
                                 (x.name.ToLower().Equals(fParam.name.ToLower().Replace("_", "")) ||
                                 x.name.ToLower().Equals(fParam.name.ToLower())));
 
