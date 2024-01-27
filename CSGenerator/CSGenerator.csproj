@@ -8,10 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="person.txt">
+    <None Update="samples\country.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="template_base.txt">
+    <None Update="samples\person.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="templates\template_sample.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

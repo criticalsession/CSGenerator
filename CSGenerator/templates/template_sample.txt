@@ -1,6 +1,6 @@
 ﻿{{USINGS}}
 
-namespace Sample 
+namespace {{NAMESPACE}}
 {
 	public class {{CLASS_NAME}} 
 	{

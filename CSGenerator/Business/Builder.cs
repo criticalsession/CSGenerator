@@ -9,6 +9,7 @@ namespace CSGenerator {
 
             string t = p.templateString;
             t = t.Replace("{{CLASS_NAME}}", p.rootClass.ClassName);
+            t = t.Replace("{{NAMESPACE}}", p.rootNamespace);
 
             StringBuilder usings = new();
             usings.AppendLine("using System;");
@@ -36,12 +37,12 @@ namespace CSGenerator {
             StringBuilder subClasses = new();
             t = t.Replace("{{SUB_CLASSES}}", subClasses.ToString());
 
-            if (!Directory.Exists("./out/"))
-                Directory.CreateDirectory("./out/");
+            if (!Directory.Exists(Utils.GetOutDirectory()))
+                Directory.CreateDirectory(Utils.GetOutDirectory());
 
-            string path = "./out/" + p.rootClassName + ".cs";
-
+            string path = Utils.GetOutPath(p.rootClass.ClassName);
             File.WriteAllText(path, t);
+
             return path;
         }
     }

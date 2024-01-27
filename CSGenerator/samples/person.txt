@@ -1,5 +1,6 @@
 ﻿// Sample: Person class with Address sub-class
-[Person:base]
+@sample
+[CSGenerator.Samples, Person]
 Age: int
 FullName: string
 CurrentAddress: Address
@@ -19,8 +20,3 @@ AddAddress(street: string, houseNo: int, country: int, startDate: DateTime, endD
 // startDate: DateTime
 // endDate: DateTime
 // ToString(): string
-// 
-// [Person.Address.Country]
-// id: Guid
-// countryName: string
-// languages: string[]

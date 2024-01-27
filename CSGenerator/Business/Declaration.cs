@@ -54,7 +54,7 @@ namespace CSGenerator {
                     key = key.Substring(0, key.IndexOf("("));
                 }
 
-                string[] rawParams = Utils.getValueBetweenBrackets(line).Split(',')
+                string[] rawParams = Utils.GetValueBetweenBrackets(line).Split(',')
                     .Select(x => x.Trim()).ToArray();
 
                 foreach (string rawParam in rawParams) {

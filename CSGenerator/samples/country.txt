@@ -1,0 +1,5 @@
+﻿@sample
+[CSGenerator.Sample, Country]
+id: Guid
+Name: string
+(id: Guid, name: string): void
