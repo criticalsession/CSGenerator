@@ -7,7 +7,8 @@ namespace CSGenerator {
                 throw new Exception("Root class structure is null. This shouldn't happen.");
             }
 
-            string t = p.templateString;
+            string t = "// Generated using CSGenerator v1.0: https://github.com/criticalsession/csgenerator" + 
+                Environment.NewLine + p.templateString;
             t = t.Replace("{{CLASS_NAME}}", p.rootClass.ClassName);
             t = t.Replace("{{NAMESPACE}}", p.rootNamespace);
 
