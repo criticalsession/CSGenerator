@@ -5,7 +5,6 @@ namespace CSGenerator {
         internal string rootClassName = "";
         internal string rootNamespace = "";
         internal string templateName = "";
-        internal List<Declaration> declarations = new();
         internal ClassStructure? rootClass;
 
         internal void Parse(string filePath) {
@@ -24,8 +23,8 @@ namespace CSGenerator {
             if (string.IsNullOrEmpty(templateName)) {
                 throw new Exception("No template declaration found. Usage example: @base will load template_base.txt.");
             }
-            
-            if (!lines[1].StartsWith("[") || !lines[1].Contains("]") || 
+
+            if (!lines[1].StartsWith("[") || !lines[1].EndsWith("]") ||
                 lines[1].Contains(":")) {
                 throw new Exception("No root class declaration found. Usage example: [Person] will create a Person root class.");
             }
@@ -40,16 +39,27 @@ namespace CSGenerator {
                 rootClassName = rootDeclaration;
             }
 
+            string currentClassPath = rootClassName;
+
+            Dictionary<string, List<Declaration>> declarations = new();
+            declarations[currentClassPath] = new List<Declaration>();
             for (int i = 2; i < lines.Length; i++) {
                 var line = lines[i];
+
+                if (line.StartsWith('[') && line.EndsWith(']')) {
+                    //new sub-class
+                    currentClassPath = line.Replace("[", "").Replace("]", "").Trim();
+                    declarations[currentClassPath] = new List<Declaration>();
+                    continue;
+                }
 
                 Declaration dec = new();
                 dec.parseDeclaration(line);
 
-                declarations.Add(dec);
+                declarations[currentClassPath].Add(dec);
             }
 
-            rootClass = new ClassStructure(rootClassName, declarations);
+            rootClass = ClassStructure.BuildStructure(rootClassName, declarations);
         }
     }
 }

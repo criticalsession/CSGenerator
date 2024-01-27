@@ -23,6 +23,8 @@ namespace CSGenerator {
 
             t = t.Replace("{{CLASS}}", BuildClass(p.rootClass, p.templateName));
 
+            t = t.Replace("\r\n\r\n", "\r\n");
+
             if (!Directory.Exists(Utils.GetOutDirectory()))
                 Directory.CreateDirectory(Utils.GetOutDirectory());
 
@@ -49,6 +51,9 @@ namespace CSGenerator {
             t = t.Replace("{{METHODS}}", methods.ToString());
 
             StringBuilder subClasses = new();
+            foreach (var s in c.subClasses) {
+                subClasses.AppendLine(BuildClass(s, templateName));
+            }
             t = t.Replace("{{SUB_CLASSES}}", subClasses.ToString());
 
             return t;

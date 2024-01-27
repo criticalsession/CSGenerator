@@ -12,13 +12,28 @@ AddAddress(street: string, houseNo: int, countryId: int, startDate: DateTime, en
 (): void
 (age: int, firstName: string, lastName: string): void
 
-// [Person.Address]
-// Street: string
-// HouseNo: int
-// countryId: int
-// StartDate: DateTime
-// EndDate: DateTime?
-// IsActive: bool
-// GetCountry(): Country
-// Deactivate(): DateTime
-// (street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): void
+[Person.Address]
+Street: string
+HouseNo: int
+countryId: int
+StartDate: DateTime
+EndDate: DateTime?
+IsActive: bool
+GetCountry(): Country
+Deactivate(): DateTime
+(street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): void
+
+[Person.Address.Country]
+id: int
+Name: string
+_countryCode: string
+&GenerateId(seed: int):int
+(_id: int, _name: string, _countryCode: string): void
+_buildCountryCode(): string
+
+[Person.Contact]
+Email: string
+HomePhone: string
+WorkPhone: string
+MobilePhone: string
+(_email: string, _homePhone: string, _workPhone: string, _mobilePhone: string): void

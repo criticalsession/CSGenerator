@@ -5,6 +5,7 @@ namespace CSGenerator {
         internal string ClassName = "";
         private List<FieldStructure> fields = new();
         private List<MethodStructure> methods = new();
+        internal List<ClassStructure> subClasses = new();
 
         internal IReadOnlyList<FieldStructure> Fields {
             get {
@@ -32,17 +33,33 @@ namespace CSGenerator {
             }
         }
 
-        internal ClassStructure(string className, List<Declaration> decs) {
-            ClassName = className;
+        internal ClassStructure() { }
 
+        internal static ClassStructure BuildStructure(string className, Dictionary<string, List<Declaration>> allDecs) {
+            ClassStructure c = new();
+
+            List<Declaration> decs = allDecs[className];
+
+            c.ClassName = className.Split('.').Last();
             foreach (var f in decs.Where(p => !p.isFunction)) {
-                fields.Add(new FieldStructure(f));
+                c.fields.Add(new FieldStructure(f));
             }
 
             foreach (var m in decs.Where(p => p.isFunction)) {
-                if (m.isConstructor) m.name = ClassName;
-                methods.Add(new MethodStructure(m));
+                if (m.isConstructor) m.name = c.ClassName;
+                c.methods.Add(new MethodStructure(m));
             }
+
+            c.subClasses = new List<ClassStructure>();
+            foreach (var subDecs in allDecs.Where(p => p.Key.StartsWith(className + "."))) {
+                // only create subclasses for declarations one level down from current class
+                string def = subDecs.Key.Replace(className + ".", "");
+                if (def.Contains(".")) continue;
+
+                c.subClasses.Add(BuildStructure(subDecs.Key, allDecs));
+            }
+
+            return c;
         }
 
         internal class FieldStructure {
