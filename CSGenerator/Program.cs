@@ -5,7 +5,7 @@ namespace CSGenerator {
             try {
                 if (args.Length == 0) {
                     throw new Exception("At least one file is required.");
-                    //args = ["./person.txt"];
+                    //args = ["./samples/person.txt", "./samples/country.txt"];
                 }
 
                 foreach (string s in args) {
@@ -23,8 +23,9 @@ namespace CSGenerator {
             } catch (Exception e) {
                 Console.WriteLine("An error has occurred: " + e.Message);
                 Console.WriteLine("Press [Enter] to exit.");
-                Console.ReadLine();
             }
+
+            Console.ReadLine();
         }
     }
 }
