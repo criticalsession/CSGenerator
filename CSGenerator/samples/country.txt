@@ -1,5 +1,6 @@
 ﻿@sample
 [CSGenerator.Sample, Country]
-id: Guid
+id: int
 Name: string
+_GenerateId(seed: int):int
 (id: Guid, name: string): void

@@ -2,26 +2,29 @@
 namespace CSGenerator {
     internal class Program {
         static void Main(string[] args) {
-            if (args.Length == 0) {
-                //Console.WriteLine("At least one file required. Press [Enter] to exit.");
-                //Console.ReadLine();
-                //return;
+            try {
+                if (args.Length == 0) {
+                    throw new Exception("At least one file is required.");
+                    //args = ["./person.txt"];
+                }
 
-                args = ["./person.txt"];
+                foreach (string s in args) {
+                    Parser parser = new();
+
+                    Console.WriteLine("Generating class for '{0}'", s);
+                    parser.Parse(s);
+
+                    Builder builder = new();
+                    builder.Build(parser);
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("Done.");
+            } catch (Exception e) {
+                Console.WriteLine("An error has occurred: " + e.Message);
+                Console.WriteLine("Press [Enter] to exit.");
+                Console.ReadLine();
             }
-
-            Parser parser = new();
-            foreach (string s in args) {
-                Console.WriteLine("Generating class for '{0}'", s);
-                parser.Parse(s);
-
-                Builder builder = new();
-                builder.Build(parser);
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("Done.");
-            Console.ReadLine();
         }
     }
 }
