@@ -5,8 +5,9 @@ namespace CSGenerator {
         internal string rootClassName = "";
         internal string templateString = "";
         internal List<Declaration> declarations = new();
+        internal ClassStructure? rootClass;
 
-        internal List<Declaration> Parse(string filePath) {
+        internal void Parse(string filePath) {
             var lines = readFile(filePath)
                 .Where(p => !string.IsNullOrEmpty(p) && !p.Trim().StartsWith("//"))
                 .ToArray();
@@ -29,7 +30,7 @@ namespace CSGenerator {
                 declarations.Add(dec);
             }
 
-            return declarations;
+            rootClass = new ClassStructure(rootClassName, declarations);
         }
     }
 }

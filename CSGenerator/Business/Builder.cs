@@ -4,7 +4,7 @@ namespace CSGenerator {
     internal class Builder {
         internal string Build(Parser p) {
             string t = p.templateString;
-            t = t.Replace("{{CLASS_NAME}}", p.rootClassName);
+            t = t.Replace("{{CLASS_NAME}}", p.rootClass.ClassName);
 
             StringBuilder usings = new();
             usings.AppendLine("using System;");
@@ -15,35 +15,14 @@ namespace CSGenerator {
             t = t.Replace("{{USINGS}}", usings.ToString());
 
             StringBuilder fields = new();
-            foreach (var dec in p.declarations.Where(p => !p.isFunction)) {
-                if (dec.isPrivate) fields.Append("private ");
-                else fields.Append("public ");
-
-                if (dec.isStatic) fields.Append("static ");
-
-                fields.Append(dec.type + " ");
-                fields.AppendLine(dec.name + ";");
+            foreach (var f in p.rootClass.Fields) {
+                fields.Append(f.ToString());
             }
             t = t.Replace("{{FIELDS}}", fields.ToString());
 
             StringBuilder methods = new();
-            foreach (var dec in p.declarations.Where(p => p.isFunction)) {
-                if (dec.isPrivate) methods.Append("private ");
-                else methods.Append("public ");
-
-                if (dec.isStatic) methods.Append("static ");
-
-                if (String.IsNullOrEmpty(dec.functionReturnType)) methods.Append("void ");
-                else methods.Append(dec.functionReturnType + " ");
-
-                methods.Append(dec.name + "(");
-                if (dec.functionParams != null) {
-                    methods.Append(String.Join(',', dec.functionParams.Select(d => d.type + " " + d.name)));
-                }
-                methods.AppendLine(")");
-                methods.AppendLine("{");
-                methods.Append("throw new NotImplementedException();");
-                methods.AppendLine("}");
+            foreach (var m in p.rootClass.Methods) {
+                methods.Append(m.ToString());
             }
             t = t.Replace("{{METHODS}}", methods.ToString());
 
