@@ -72,7 +72,7 @@ namespace CSGenerator {
                 }
             }
 
-            if (key.StartsWith("_")) {
+            if (key.StartsWith("&")) {
                 this.isStatic = true;
                 key = key.Substring(1);
             }

@@ -2,5 +2,5 @@
 [CSGenerator.Sample, Country]
 id: int
 Name: string
-_GenerateId(seed: int):int
-(id: Guid, name: string): void
+&GenerateId(seed: int):int
+(_id: Guid, _name: string): void
