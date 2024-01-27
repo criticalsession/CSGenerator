@@ -77,8 +77,11 @@ namespace CSGenerator {
                 key = key.Substring(1);
             }
 
-            if (!this.isConstructor && char.IsLower(key[0])) {
+            if (!this.isConstructor && (char.IsLower(key[0]) || key[0] == '_')) {
                 this.isPrivate = true;
+                if (this.isFunction) {
+                    key = key.Substring(1);
+                }
             }
 
             this.name = key;

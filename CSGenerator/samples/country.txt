@@ -2,5 +2,7 @@
 [CSGenerator.Sample, Country]
 id: int
 Name: string
+_countryCode: string
 &GenerateId(seed: int):int
-(_id: Guid, _name: string): void
+(_id: int, _name: string, _countryCode: string): void
+_buildCountryCode(): string

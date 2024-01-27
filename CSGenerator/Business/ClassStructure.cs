@@ -93,12 +93,14 @@ namespace CSGenerator {
                 if (!isConstructor) {
                     sb.Append("throw new NotImplementedException();");
                 } else if (functionParams != null) {
-                    foreach (var p in functionParams) {
+                    foreach (var fParam in functionParams) {
                         var matching = classFields
-                            .FirstOrDefault(x => x.type.Equals(p.type) && x.name.ToLower().Equals(p.name.ToLower()));
+                            .FirstOrDefault(x => x.type.Equals(fParam.type) && 
+                                (x.name.ToLower().Equals(fParam.name.ToLower().Replace("_", "")) ||
+                                x.name.ToLower().Equals(fParam.name.ToLower())));
 
                         if (matching != null) {
-                            sb.AppendLine(String.Format("this.{0} = {1};", matching.name, p.name));
+                            sb.AppendLine(String.Format("this.{0} = {1};", matching.name, fParam.name));
                         }
                     }
                 }
