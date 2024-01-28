@@ -1,8 +1,6 @@
 ﻿public class {{CLASS_NAME}} 
 {
 	{{FIELDS}}
-	
 	{{METHODS}}
-
 	{{SUB_CLASSES}}
 }

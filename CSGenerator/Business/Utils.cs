@@ -57,7 +57,7 @@ namespace CSGenerator {
 
         internal static void ValidateFunctionParam(string rawParam) {
             foreach (char c in rawParam) {
-                if (!(c == ':' || c == '_' || char.IsLetterOrDigit(c))) {
+                if (!(c == ':' || c == '_' || c == ' ' || c == '?' || char.IsLetterOrDigit(c))) {
                     throw new Exception("Function parameter cannot contain brackets: " + rawParam);
                 }
             }

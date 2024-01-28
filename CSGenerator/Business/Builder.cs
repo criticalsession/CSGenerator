@@ -21,9 +21,7 @@ namespace CSGenerator {
             usings.AppendLine("using System.Threading.Tasks;");
             t = t.Replace("{{USINGS}}", usings.ToString());
 
-            t = t.Replace("{{CLASS}}", BuildClass(p.rootClass, p.templateName));
-
-            t = t.Replace("\r\n\r\n", "\r\n");
+            t = t.Replace("{{CLASS}}", BuildClass(p.rootClass, p.templateName, isRoot: true));
 
             if (!Directory.Exists(Utils.GetOutDirectory()))
                 Directory.CreateDirectory(Utils.GetOutDirectory());
@@ -34,8 +32,8 @@ namespace CSGenerator {
             return path;
         }
 
-        internal string BuildClass(ClassStructure c, string templateName) {
-            string t = Utils.ReadTemplate(templateName + "_class");
+        internal string BuildClass(ClassStructure c, string templateName, bool isRoot = false) {
+            string t = (isRoot ? "" : Environment.NewLine) + Utils.ReadTemplate(templateName + "_class");
             t = t.Replace("{{CLASS_NAME}}", c.ClassName);
 
             StringBuilder fields = new();

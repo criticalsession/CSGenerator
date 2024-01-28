@@ -11,6 +11,7 @@ namespace CSGenerator {
         internal List<Declaration>? functionParams;
         internal string? functionReturnType;
         internal bool isConstructor;
+        internal string comment;
         private bool _isFunction;
 
         internal bool isFunction {
@@ -39,6 +40,7 @@ namespace CSGenerator {
         internal Declaration() {
             name = "";
             type = "";
+            comment = "";
             isStatic = false;
             isPrivate = false;
             isConstructor = false;
@@ -82,6 +84,8 @@ namespace CSGenerator {
                     param.parseDeclaration(rawParam);
                     this.functionParams.Add(param);
                 }
+
+                key = functionName;
             }
 
             if (key.StartsWith('&')) {
@@ -104,6 +108,11 @@ namespace CSGenerator {
             if (val.StartsWith('>')) {
                 this.isSetter = true;
                 val = val.Substring(1).Trim();
+            }
+
+            if (val.Contains("//")) {
+                this.comment = val.Substring(val.IndexOf("//")).Replace("//", "").Trim();
+                val = val.Substring(0, val.IndexOf("//")).Trim();
             }
 
             this.name = key;

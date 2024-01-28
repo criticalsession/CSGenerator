@@ -66,6 +66,7 @@ namespace CSGenerator {
         internal class FieldStructure {
             internal string name;
             internal string type;
+            internal string comment;
             internal bool isStatic;
             internal bool isPrivate;
             internal bool isSetter;
@@ -80,6 +81,7 @@ namespace CSGenerator {
             internal FieldStructure(Declaration dec) {
                 name = dec.name;
                 type = dec.type;
+                comment = dec.comment;
                 isStatic = dec.isStatic;
                 isPrivate = dec.isPrivate;
                 isGetter = dec.isGetter;
@@ -88,6 +90,10 @@ namespace CSGenerator {
 
             internal string Write(IReadOnlyList<FieldStructure> classFields) {
                 StringBuilder sb = new();
+
+                if (IsProperty && !string.IsNullOrEmpty(comment)) {
+                    sb.AppendLine("\r\n// " + comment);
+                }
 
                 if (isPrivate) sb.Append("private ");
                 else sb.Append("public ");
@@ -99,7 +105,7 @@ namespace CSGenerator {
                         type = matchingField.type;
                     }
 
-                    sb.Append(type + " " + name + " { ");
+                    sb.AppendLine(type + " " + name + " { ");
 
                     if (isGetter) {
                         sb.AppendLine("get {");
@@ -130,7 +136,13 @@ namespace CSGenerator {
                     if (isStatic) sb.Append("static ");
 
                     sb.Append(type + " ");
-                    sb.AppendLine(name + ";");
+                    sb.Append(name + ";");
+
+                    if (!string.IsNullOrEmpty(comment)) {
+                        sb.Append(" // " + comment);
+                    }
+
+                    sb.Append("\r\n");
                 }
 
                 return sb.ToString();
@@ -139,6 +151,7 @@ namespace CSGenerator {
 
         internal class MethodStructure {
             internal string name;
+            internal string comment;
             internal bool isStatic;
             internal bool isPrivate;
             internal bool isConstructor;
@@ -147,6 +160,7 @@ namespace CSGenerator {
 
             internal MethodStructure(Declaration dec) {
                 name = dec.name;
+                comment = dec.comment;
                 isStatic = dec.isStatic;
                 isPrivate = dec.isPrivate;
                 isConstructor = dec.isConstructor;
@@ -166,6 +180,12 @@ namespace CSGenerator {
             internal string Write(IReadOnlyList<FieldStructure> classFields) {
                 StringBuilder sb = new();
 
+                sb.AppendLine();
+
+                if (!string.IsNullOrEmpty(comment)) {
+                    sb.AppendLine("// " + comment);
+                }
+
                 if (isPrivate) sb.Append("private ");
                 else sb.Append("public ");
 
@@ -180,6 +200,7 @@ namespace CSGenerator {
                 }
                 sb.AppendLine(")");
                 sb.AppendLine("{");
+
                 if (!isConstructor) {
                     sb.Append("throw new NotImplementedException();");
                 } else if (functionParams != null) {
@@ -195,7 +216,7 @@ namespace CSGenerator {
                     }
                 }
 
-                sb.AppendLine("}\n");
+                sb.AppendLine("}");
 
                 return sb.ToString();
             }
