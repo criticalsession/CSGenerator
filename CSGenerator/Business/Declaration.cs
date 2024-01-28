@@ -84,7 +84,7 @@ namespace CSGenerator {
                 }
             }
 
-            if (key.StartsWith("&")) {
+            if (key.StartsWith('&')) {
                 this.isStatic = true;
                 key = key.Substring(1);
             }
@@ -92,7 +92,7 @@ namespace CSGenerator {
             if (!this.isConstructor && (char.IsLower(key[0]) || key[0] == '_')) {
                 this.isPrivate = true;
                 if (this.isFunction) {
-                    key = key.Substring(1);
+                    key = key.Replace('_', ' ').Trim();
                 }
             }
 
@@ -112,20 +112,6 @@ namespace CSGenerator {
             } else {
                 this.type = val;
             }
-        }
-
-        public override string ToString() {
-            StringBuilder sb = new();
-            sb.AppendLine(String.Format("Name: {0}, Type: {1}, IsStatic: {2}, IsPrivate: {3}, " +
-                "IsFunction: {4}, FunctionReturnType: {5}",
-                name, type, isStatic, isPrivate, isFunction, functionReturnType));
-            if (isFunction) {
-                foreach (Declaration d in functionParams!) {
-                    sb.Append(" >> " + d.ToString());
-                }
-            }
-
-            return sb.ToString();
         }
     }
 }
