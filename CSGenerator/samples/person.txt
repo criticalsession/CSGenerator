@@ -3,13 +3,13 @@
 [CSGenerator.Samples, Person]
 Age: int
 FullName: string
-Addresses: List<Address>
-CurrentAddress <: Address
+Addresses: List<Address> //List of current and past addresses
+CurrentAddress <: Address //Returns the current address from a list of address assigned to this person
 &GetAll(): List<Person>
 &Load(id: int): Person
 &Delete(id: int): void
 &Insert(data: Person): int
-AddAddress(street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): Address
+AddAddress(street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): Address //Add address to this person's list of addresses
 (): void
 (age: int, firstName: string, lastName: string): void
 
@@ -19,7 +19,7 @@ HouseNo: int
 countryId: int
 StartDate: DateTime
 EndDate: DateTime?
-IsActive: bool
+IsActive <: bool //Checks if the address is still active (based on EndDate)
 GetCountry(): Country
 Deactivate(): DateTime
 (street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): void
@@ -30,7 +30,7 @@ Name: string
 _countryCode: string
 CountryCode <:> _countryCode
 &GenerateId(seed: int):int
-(_id: int, _name: string, _countryCode: string): void
+(_id: int, _name: string, _countryCode: string): void //Instantiates a new country
 _buildCountryCode(): string
 
 [Person.Contact]

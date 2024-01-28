@@ -53,19 +53,22 @@ namespace CSGenerator {
             }
 
             int lastSplit = line.LastIndexOf(':');
-            string key = line.Substring(0, lastSplit).Replace(" ", ""); // don't use trim, need \t
+            string key = line.Substring(0, lastSplit).Trim();
             string val = line.Substring(lastSplit + 1).Trim();
 
             if (key.Contains('(') && key.Contains(')')) {
                 this.isFunction = true;
+                this.functionParams = new List<Declaration>();
+
+                string functionName = key;
                 if (key.StartsWith('(')) {
                     this.isConstructor = true;
-                    key = "";
+                    functionName = "";
                 } else {
-                    key = key.Substring(0, key.IndexOf('('));
+                    functionName = key.Substring(0, key.IndexOf('('));
                 }
 
-                string[] rawParams = Utils.GetValueBetweenBrackets(line).Split(',')
+                string[] rawParams = Utils.GetValueBetweenBrackets(key).Split(',')
                     .Select(x => x.Trim()).ToArray();
 
                 foreach (string rawParam in rawParams) {
@@ -73,13 +76,11 @@ namespace CSGenerator {
                         continue;
                     }
 
-                    if (rawParam.Contains('(')) {
-                        throw new Exception("Function parameter cannot contain brackets: " + rawParam);
-                    }
+                    Utils.ValidateFunctionParam(rawParam);
 
                     Declaration param = new();
                     param.parseDeclaration(rawParam);
-                    this.functionParams?.Add(param);
+                    this.functionParams.Add(param);
                 }
             }
 
