@@ -17,7 +17,7 @@ namespace CSGenerator {
 
         internal static string GetValueBetweenBrackets(string line) {
             if (!line.Contains("(") || !line.Contains(")")) {
-                throw new Exception("No brackets found in line: " + line);
+                throw new Exception("No brackets found in line but expected brackets: " + line);
             }
 
             int first = line.IndexOf("(");
