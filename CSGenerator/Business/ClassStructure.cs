@@ -63,12 +63,22 @@ namespace CSGenerator {
             return c;
         }
 
-        internal class FieldStructure {
+        internal class Base {
             internal string name;
-            internal string type;
             internal string comment;
             internal bool isStatic;
             internal bool isPrivate;
+
+            internal Base(Declaration dec) {
+                name = dec.name;
+                comment = dec.comment;
+                isStatic = dec.isStatic;
+                isPrivate = dec.isPrivate;
+            }
+        }
+
+        internal class FieldStructure : Base {
+            internal string type;
             internal bool isSetter;
             internal bool isGetter;
 
@@ -78,12 +88,8 @@ namespace CSGenerator {
                 }
             }
 
-            internal FieldStructure(Declaration dec) {
-                name = dec.name;
+            internal FieldStructure(Declaration dec) : base(dec) {
                 type = dec.type;
-                comment = dec.comment;
-                isStatic = dec.isStatic;
-                isPrivate = dec.isPrivate;
                 isGetter = dec.isGetter;
                 isSetter = dec.isSetter;
             }
@@ -149,20 +155,12 @@ namespace CSGenerator {
             }
         }
 
-        internal class MethodStructure {
-            internal string name;
-            internal string comment;
-            internal bool isStatic;
-            internal bool isPrivate;
+        internal class MethodStructure : Base {
             internal bool isConstructor;
             internal List<FieldStructure> functionParams = new();
             internal string functionReturnType;
 
-            internal MethodStructure(Declaration dec) {
-                name = dec.name;
-                comment = dec.comment;
-                isStatic = dec.isStatic;
-                isPrivate = dec.isPrivate;
+            internal MethodStructure(Declaration dec) : base(dec) {
                 isConstructor = dec.isConstructor;
                 functionReturnType =
                     String.IsNullOrEmpty(dec.functionReturnType) || dec.functionReturnType.ToLower() == "null"
@@ -183,7 +181,7 @@ namespace CSGenerator {
                 sb.AppendLine();
 
                 if (!string.IsNullOrEmpty(comment)) {
-                    sb.AppendLine("// " + comment);
+                    sb.Append(WriteComment());
                 }
 
                 if (isPrivate) sb.Append("private ");
@@ -217,6 +215,12 @@ namespace CSGenerator {
                 }
 
                 sb.AppendLine("}");
+
+                return sb.ToString();
+            }
+
+            internal string WriteComment() {
+                StringBuilder sb = new StringBuilder();
 
                 return sb.ToString();
             }
