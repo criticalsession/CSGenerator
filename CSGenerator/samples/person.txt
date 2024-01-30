@@ -2,7 +2,10 @@
 @sample
 [CSGenerator.Samples, Person]
 Age: int
-FullName: string
+firstName: string
+lastName: string
+FullName <: string
+	return firstName + " " + lastName;
 Addresses: List<Address> //List of current and past addresses
 CurrentAddress <: Address //Returns the current address from a list of address assigned to this person
 	if (Addresses != null && Addresses.Length > 0) {
