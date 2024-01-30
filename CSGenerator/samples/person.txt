@@ -4,10 +4,11 @@
 Age: int
 firstName: string
 lastName: string
-FullName <: string
-	return firstName + " " + lastName;
+FullName: string
+	get firstName + " " + lastName
 Addresses: List<Address> //List of current and past addresses
-CurrentAddress <: Address //Returns the current address from a list of address assigned to this person
+CurrentAddress : Address //Returns the current address from a list of address assigned to this person
+	get
 	if (Addresses != null && Addresses.Length > 0) {
 		return Addresses.FirstOrDefault(a => a.IsActive);
 	}
@@ -25,8 +26,8 @@ HouseNo: int
 countryId: int
 StartDate: DateTime
 EndDate: DateTime?
-IsActive <: bool //Checks if the address is still active (based on EndDate)
-	return !EndDate.HasValue;
+IsActive : bool //Checks if the address is still active (based on EndDate)
+	get !EndDate.HasValue
 GetCountry(): Country
 Deactivate(): DateTime
 (street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): void
@@ -35,14 +36,20 @@ Deactivate(): DateTime
 id: int
 Name: string
 _countryCode: string
-CountryCode <:> _countryCode
+CountryCode: string
+	get _countryCode
+	set _countryCode
 &GenerateId(seed: int):int
 (_id: int, _name: string, _countryCode: string): void //Instantiates a new country
 _buildCountryCode(): string
 
 [Person.Contact]
 Email: string
+	set
+	if (value.Length > 0) Email = value;
 HomePhone: string
 WorkPhone: string
 MobilePhone: string
+IsAnyPhoneSet: bool
+	get !string.IsNullOrEmpty(HomePhone) || !string.IsNullOrEmpty(WorkPhone) || !string.IsNullOrEmpty(MobilePhone)
 (_email: string, _homePhone: string, _workPhone: string, _mobilePhone: string): void

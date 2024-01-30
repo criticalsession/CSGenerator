@@ -15,10 +15,10 @@ namespace CSGenerator
 			get
 			{
 				List<FieldStructure> fList = [
-					.. fields.Where(p => !p.isStatic && p.isPrivate && p.name.Contains('_') && !p.IsProperty),
-					.. fields.Where(p => !p.isStatic && p.isPrivate && !p.name.Contains('_') && !p.IsProperty),
-					.. fields.Where(p => !p.isStatic && !p.isPrivate && !p.IsProperty),
-					.. fields.Where(p => !p.isStatic && p.IsProperty),
+					.. fields.Where(p => !p.isStatic && p.isPrivate && p.name.Contains('_') && !p.isProperty),
+					.. fields.Where(p => !p.isStatic && p.isPrivate && !p.name.Contains('_') && !p.isProperty),
+					.. fields.Where(p => !p.isStatic && !p.isPrivate && !p.isProperty),
+					.. fields.Where(p => !p.isStatic && p.isProperty),
 				];
 
 				return fList;
@@ -80,7 +80,7 @@ namespace CSGenerator
 			internal string comment;
 			internal bool isStatic;
 			internal bool isPrivate;
-			internal List<string> extras;
+			internal List<ExtraData> extras;
 
 			internal Base(Declaration dec)
 			{
@@ -88,36 +88,74 @@ namespace CSGenerator
 				comment = dec.comment;
 				isStatic = dec.isStatic;
 				isPrivate = dec.isPrivate;
-				extras = dec.extras;
 			}
 		}
 
 		internal class FieldStructure : Base
 		{
 			internal string type;
-			internal bool isSetter;
-			internal bool isGetter;
-
-			internal bool IsProperty
-			{
-				get
-				{
-					return isSetter || isGetter;
-				}
-			}
+			internal bool isProperty;
 
 			internal FieldStructure(Declaration dec) : base(dec)
 			{
 				type = dec.type;
-				isGetter = dec.isGetter;
-				isSetter = dec.isSetter;
+				extras = [];
+				ParseExtras(dec.extras);
+			}
+
+			private void ParseExtras(List<string> dExtras)
+			{
+				if (dExtras.Count == 0) return;
+
+				if (!(dExtras[0].StartsWith("get ") || dExtras[0].StartsWith("set ")
+					|| dExtras[0] == "get" || dExtras[0] == "set"))
+				{
+					throw new Exception("Property content block should start with 'get' or 'set': " + dExtras[0]);
+				}
+
+				isProperty = true;
+
+				List<ExtraData> modifiedExtras = [];
+				foreach (string extra in dExtras)
+				{
+					if (extra.Length > 4)
+					{
+						if (extra.StartsWith("get "))
+						{
+							modifiedExtras.Add(new ExtraData("get", ExtraData.DataType.Scaffolding));
+							modifiedExtras.Add(new ExtraData(extra[4..], ExtraData.DataType.SingleLine));
+							continue;
+						}
+						else if (extra.StartsWith("set "))
+						{
+							modifiedExtras.Add(new ExtraData("set", ExtraData.DataType.Scaffolding));
+							modifiedExtras.Add(new ExtraData(extra[4..], ExtraData.DataType.SingleLine));
+							continue;
+						}
+					}
+
+					if (extra.Trim().Equals("get"))
+					{
+						modifiedExtras.Add(new ExtraData("get", ExtraData.DataType.Scaffolding));
+					}
+					else if (extra.Trim().Equals("set"))
+					{
+						modifiedExtras.Add(new ExtraData("set", ExtraData.DataType.Scaffolding));
+					}
+					else
+					{
+						modifiedExtras.Add(new ExtraData(extra, ExtraData.DataType.MultiLine));
+					}
+				}
+
+				extras = modifiedExtras;
 			}
 
 			internal string Write(IReadOnlyList<FieldStructure> classFields)
 			{
 				StringBuilder sb = new();
 
-				if (IsProperty && !string.IsNullOrEmpty(comment))
+				if (isProperty && !string.IsNullOrEmpty(comment))
 				{
 					sb.AppendLine("\r\n// " + comment);
 				}
@@ -125,69 +163,68 @@ namespace CSGenerator
 				if (isPrivate) sb.Append("private ");
 				else sb.Append("public ");
 
-				if (IsProperty)
+				if (isProperty)
 				{
-					var matchingField = classFields.FirstOrDefault(x => x.name.ToLower().Replace("_", "").Equals(type.ToLower()) ||
-						x.name.ToLower().Equals(type.ToLower()));
-					if (matchingField != null)
-					{
-						type = matchingField.type;
-					}
-
 					sb.AppendLine(type + " " + name + " { ");
 
-					if (isGetter)
+					bool? getBlock = null;
+					foreach (ExtraData extra in extras)
 					{
-						sb.AppendLine("get {");
+						if (extra.type == ExtraData.DataType.Scaffolding && extra.line == "get")
+						{
+							if (getBlock.HasValue) sb.AppendLine("}");
 
-						if (matchingField != null)
-						{
-							sb.AppendLine("return " + matchingField.name + ";");
+							sb.AppendLine("get {");
+							getBlock = true;
+							continue;
 						}
-						else
+
+						if (extra.type == ExtraData.DataType.Scaffolding && extra.line == "set")
 						{
-							if (extras.Count > 0)
+							if (getBlock.HasValue) sb.AppendLine("}");
+
+							sb.AppendLine("set {");
+							getBlock = false;
+							continue;
+						}
+
+						if (extra.type == ExtraData.DataType.SingleLine)
+						{
+							if (!getBlock.HasValue)
 							{
-								foreach (string e in extras)
+								throw new Exception("Unexpected extra value found outside of get/set block: " + extra.line);
+							}
+
+							if (!getBlock.Value)
+							{
+								var matchingField = classFields.FirstOrDefault(p => p.name.Equals(extra.line,
+									StringComparison.CurrentCultureIgnoreCase) && p.type.Equals(type));
+
+								if (matchingField != null)
 								{
-									sb.AppendLine(e);
+									sb.AppendLine(extra.line + " = value;");
+								}
+								else
+								{
+									sb.AppendLine(extra.line + ";");
 								}
 							}
 							else
 							{
-								sb.AppendLine("throw new NotImplementedException();");
+								sb.AppendLine("return " + extra.line + ";");
 							}
 						}
-
-						sb.AppendLine("}");
-					}
-
-					if (isSetter)
-					{
-						sb.AppendLine("set {");
-
-						if (matchingField != null)
+						else if (extra.type == ExtraData.DataType.MultiLine)
 						{
-							sb.AppendLine(matchingField.name + " = value;");
+							sb.AppendLine(extra.line);
 						}
 						else
 						{
-							if (extras.Count > 0)
-							{
-								foreach (string e in extras)
-								{
-									sb.AppendLine(e);
-								}
-							}
-							else
-							{
-								sb.AppendLine("throw new NotImplementedException();");
-							}
+							throw new Exception("Unexpected data type in extras found: " + extra.type);
 						}
-
-						sb.AppendLine("}");
 					}
 
+					sb.AppendLine("}");
 					sb.AppendLine("}");
 				}
 				else
@@ -205,7 +242,7 @@ namespace CSGenerator
 					sb.Append("\r\n");
 				}
 
-				return sb.ToString();
+				return sb.ToString().Replace(";;", ";");
 			}
 		}
 
@@ -263,9 +300,9 @@ namespace CSGenerator
 
 				if (!isConstructor)
 				{
-					if (extras.Count > 0)
+					if (extras != null && extras.Count > 0)
 					{
-						foreach (string e in extras)
+						foreach (string e in extras.Select(p => p.line))
 						{
 							sb.AppendLine(e);
 						}
@@ -304,17 +341,37 @@ namespace CSGenerator
 				sb.AppendLine("/// " + comment);
 				sb.AppendLine("/// </summary>");
 
-				foreach (var par in functionParams) {
+				foreach (var par in functionParams)
+				{
 					sb.AppendLine("/// <param name=\"" + par.name + "\"></param>");
 				}
 
-				if (functionReturnType != null && functionReturnType != "" 
+				if (functionReturnType != null && functionReturnType != ""
 					&& functionReturnType != "void" && functionReturnType != "null")
 				{
 					sb.AppendLine("/// <returns></returns>");
 				}
 
 				return sb.ToString();
+			}
+		}
+
+		internal class ExtraData
+		{
+			internal string line;
+			internal DataType type;
+
+			internal ExtraData(string line, DataType type)
+			{
+				this.line = line;
+				this.type = type;
+			}
+
+			internal enum DataType
+			{
+				SingleLine,
+				Scaffolding,
+				MultiLine
 			}
 		}
 	}

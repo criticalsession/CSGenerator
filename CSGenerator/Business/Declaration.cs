@@ -124,18 +124,6 @@ namespace CSGenerator
 				}
 			}
 
-			if (key.EndsWith('<'))
-			{
-				this.isGetter = true;
-				key = key.Replace('<', ' ').Trim();
-			}
-
-			if (val.StartsWith('>'))
-			{
-				this.isSetter = true;
-				val = val[1..].Trim();
-			}
-
 			if (val.Contains("//"))
 			{
 				this.comment = val[val.IndexOf("//")..].Replace("//", "").Trim();
