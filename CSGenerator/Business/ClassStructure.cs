@@ -1,267 +1,229 @@
 ﻿using System.Text;
 
-namespace CSGenerator
-{
-	internal class ClassStructure
-	{
-		internal string ClassName = "";
-		private readonly List<FieldStructure> fields = [];
-		private readonly List<MethodStructure> methods = [];
-		internal List<ClassStructure> subClasses = [];
+namespace CSGenerator {
+    internal class ClassStructure {
+        internal string ClassName = "";
+        private List<FieldStructure> fields = new();
+        private List<MethodStructure> methods = new();
+        internal List<ClassStructure> subClasses = new();
 
-		internal IReadOnlyList<FieldStructure> Fields
-		{
-			get
-			{
-				List<FieldStructure> fList = [
-					.. fields.Where(p => !p.isStatic && p.isPrivate && p.name.Contains('_') && !p.IsProperty),
-					.. fields.Where(p => !p.isStatic && p.isPrivate && !p.name.Contains('_') && !p.IsProperty),
-					.. fields.Where(p => !p.isStatic && !p.isPrivate && !p.IsProperty),
-					.. fields.Where(p => !p.isStatic && p.IsProperty),
-				];
+        internal IReadOnlyList<FieldStructure> Fields {
+            get {
+                List<FieldStructure> fList = [
+                    .. fields.Where(p => !p.isStatic && p.isPrivate && p.name.Contains('_') && !p.IsProperty),
+                    .. fields.Where(p => !p.isStatic && p.isPrivate && !p.name.Contains('_') && !p.IsProperty),
+                    .. fields.Where(p => !p.isStatic && !p.isPrivate && !p.IsProperty),
+                    .. fields.Where(p => !p.isStatic && p.IsProperty),
+                ];
 
-				return fList;
-			}
-		}
+                return fList;
+            }
+        }
 
-		internal IReadOnlyList<MethodStructure> Methods
-		{
-			get
-			{
-				List<MethodStructure> mList =
-				[
-					.. methods.Where(p => p.isConstructor),
-					.. methods.Where(p => !p.isConstructor && !p.isStatic && p.isPrivate),
-					.. methods.Where(p => !p.isConstructor && !p.isStatic && !p.isPrivate),
-					.. methods.Where(p => !p.isConstructor && p.isStatic),
-				];
+        internal IReadOnlyList<MethodStructure> Methods {
+            get {
+                List<MethodStructure> mList =
+                [
+                    .. methods.Where(p => p.isConstructor),
+                    .. methods.Where(p => !p.isConstructor && !p.isStatic && p.isPrivate),
+                    .. methods.Where(p => !p.isConstructor && !p.isStatic && !p.isPrivate),
+                    .. methods.Where(p => !p.isConstructor && p.isStatic),
+                ];
 
-				return mList;
-			}
-		}
+                return mList;
+            }
+        }
 
-		internal ClassStructure() { }
+        internal ClassStructure() { }
 
-		internal static ClassStructure BuildStructure(string className, Dictionary<string, List<Declaration>> allDecs)
-		{
-			ClassStructure c = new();
+        internal static ClassStructure BuildStructure(string className, Dictionary<string, List<Declaration>> allDecs) {
+            ClassStructure c = new();
 
-			List<Declaration> decs = allDecs[className];
+            List<Declaration> decs = allDecs[className];
 
-			c.ClassName = className.Split('.').Last();
-			foreach (var f in decs.Where(p => !p.isFunction))
-			{
-				c.fields.Add(new FieldStructure(f));
-			}
+            c.ClassName = className.Split('.').Last();
+            foreach (var f in decs.Where(p => !p.isFunction)) {
+                c.fields.Add(new FieldStructure(f));
+            }
 
-			foreach (var m in decs.Where(p => p.isFunction))
-			{
-				if (m.isConstructor) m.name = c.ClassName;
-				c.methods.Add(new MethodStructure(m));
-			}
+            foreach (var m in decs.Where(p => p.isFunction)) {
+                if (m.isConstructor) m.name = c.ClassName;
+                c.methods.Add(new MethodStructure(m));
+            }
 
-			c.subClasses = [];
-			foreach (var subDecs in allDecs.Where(p => p.Key.StartsWith(className + ".")))
-			{
-				// only create subclasses for declarations one level down from current class
-				string def = subDecs.Key.Replace(className + ".", "");
-				if (def.Contains('.')) continue;
+            c.subClasses = new List<ClassStructure>();
+            foreach (var subDecs in allDecs.Where(p => p.Key.StartsWith(className + "."))) {
+                // only create subclasses for declarations one level down from current class
+                string def = subDecs.Key.Replace(className + ".", "");
+                if (def.Contains(".")) continue;
 
-				c.subClasses.Add(BuildStructure(subDecs.Key, allDecs));
-			}
+                c.subClasses.Add(BuildStructure(subDecs.Key, allDecs));
+            }
 
-			return c;
-		}
+            return c;
+        }
 
-		internal class FieldStructure
-		{
-			internal string name;
-			internal string type;
-			internal string comment;
-			internal bool isStatic;
-			internal bool isPrivate;
-			internal bool isSetter;
-			internal bool isGetter;
+        internal class Base {
+            internal string name;
+            internal string comment;
+            internal bool isStatic;
+            internal bool isPrivate;
 
-			internal bool IsProperty
-			{
-				get
-				{
-					return isSetter || isGetter;
-				}
-			}
+            internal Base(Declaration dec) {
+                name = dec.name;
+                comment = dec.comment;
+                isStatic = dec.isStatic;
+                isPrivate = dec.isPrivate;
+            }
+        }
 
-			internal FieldStructure(Declaration dec)
-			{
-				name = dec.name;
-				type = dec.type;
-				comment = dec.comment;
-				isStatic = dec.isStatic;
-				isPrivate = dec.isPrivate;
-				isGetter = dec.isGetter;
-				isSetter = dec.isSetter;
-			}
+        internal class FieldStructure : Base {
+            internal string type;
+            internal bool isSetter;
+            internal bool isGetter;
 
-			internal string Write(IReadOnlyList<FieldStructure> classFields)
-			{
-				StringBuilder sb = new();
+            internal bool IsProperty {
+                get {
+                    return isSetter || isGetter;
+                }
+            }
 
-				if (IsProperty && !string.IsNullOrEmpty(comment))
-				{
-					sb.AppendLine("\r\n// " + comment);
-				}
+            internal FieldStructure(Declaration dec) : base(dec) {
+                type = dec.type;
+                isGetter = dec.isGetter;
+                isSetter = dec.isSetter;
+            }
 
-				if (isPrivate) sb.Append("private ");
-				else sb.Append("public ");
+            internal string Write(IReadOnlyList<FieldStructure> classFields) {
+                StringBuilder sb = new();
 
-				if (IsProperty)
-				{
-					var matchingField = classFields.FirstOrDefault(x => x.name.ToLower().Replace("_", "").Equals(type.ToLower()) ||
-						x.name.ToLower().Equals(type.ToLower()));
-					if (matchingField != null)
-					{
-						type = matchingField.type;
-					}
+                if (IsProperty && !string.IsNullOrEmpty(comment)) {
+                    sb.AppendLine("\r\n// " + comment);
+                }
 
-					sb.AppendLine(type + " " + name + " { ");
+                if (isPrivate) sb.Append("private ");
+                else sb.Append("public ");
 
-					if (isGetter)
-					{
-						sb.AppendLine("get {");
+                if (IsProperty) {
+                    var matchingField = classFields.FirstOrDefault(x => x.name.ToLower().Replace("_", "").Equals(type.ToLower()) ||
+                        x.name.ToLower().Equals(type.ToLower()));
+                    if (matchingField != null) {
+                        type = matchingField.type;
+                    }
 
-						if (matchingField != null)
-						{
-							sb.AppendLine("return " + matchingField.name + ";");
-						}
-						else
-						{
-							sb.AppendLine("throw new NotImplementedException();");
-						}
+                    sb.AppendLine(type + " " + name + " { ");
 
-						sb.AppendLine("}");
-					}
+                    if (isGetter) {
+                        sb.AppendLine("get {");
 
-					if (isSetter)
-					{
-						sb.AppendLine("set {");
+                        if (matchingField != null) {
+                            sb.AppendLine("return " + matchingField.name + ";");
+                        } else {
+                            sb.AppendLine("throw new NotImplementedException();");
+                        }
 
-						if (matchingField != null)
-						{
-							sb.AppendLine(matchingField.name + " = value;");
-						}
-						else
-						{
-							sb.AppendLine("throw new NotImplementedException();");
-						}
+                        sb.AppendLine("}");
+                    }
 
-						sb.AppendLine("}");
-					}
+                    if (isSetter) {
+                        sb.AppendLine("set {");
 
-					sb.AppendLine("}");
-				}
-				else
-				{
-					if (isStatic) sb.Append("static ");
+                        if (matchingField != null) {
+                            sb.AppendLine(matchingField.name + " = value;");
+                        } else {
+                            sb.AppendLine("throw new NotImplementedException();");
+                        }
 
-					sb.Append(type + " ");
-					sb.Append(name + ";");
+                        sb.AppendLine("}");
+                    }
 
-					if (!string.IsNullOrEmpty(comment))
-					{
-						sb.Append(" // " + comment);
-					}
+                    sb.AppendLine("}");
+                } else {
+                    if (isStatic) sb.Append("static ");
 
-					sb.Append("\r\n");
-				}
+                    sb.Append(type + " ");
+                    sb.Append(name + ";");
 
-				return sb.ToString();
-			}
-		}
+                    if (!string.IsNullOrEmpty(comment)) {
+                        sb.Append(" // " + comment);
+                    }
 
-		internal class MethodStructure
-		{
-			internal string name;
-			internal string comment;
-			internal bool isStatic;
-			internal bool isPrivate;
-			internal bool isConstructor;
-			internal List<FieldStructure> functionParams = [];
-			internal string functionReturnType;
+                    sb.Append("\r\n");
+                }
 
-			internal MethodStructure(Declaration dec)
-			{
-				name = dec.name;
-				comment = dec.comment;
-				isStatic = dec.isStatic;
-				isPrivate = dec.isPrivate;
-				isConstructor = dec.isConstructor;
-				functionReturnType =
-					String.IsNullOrEmpty(dec.functionReturnType) || dec.functionReturnType.Equals("null", StringComparison.CurrentCultureIgnoreCase)
-					? "void"
-					: dec.functionReturnType;
+                return sb.ToString();
+            }
+        }
 
-				if (dec.functionParams != null)
-				{
-					foreach (var p in dec.functionParams)
-					{
-						FieldStructure s = new(p);
-						functionParams.Add(s);
-					}
-				}
-			}
+        internal class MethodStructure : Base {
+            internal bool isConstructor;
+            internal List<FieldStructure> functionParams = new();
+            internal string functionReturnType;
 
-			internal string Write(IReadOnlyList<FieldStructure> classFields)
-			{
-				StringBuilder sb = new();
+            internal MethodStructure(Declaration dec) : base(dec) {
+                isConstructor = dec.isConstructor;
+                functionReturnType =
+                    String.IsNullOrEmpty(dec.functionReturnType) || dec.functionReturnType.ToLower() == "null"
+                    ? "void"
+                    : dec.functionReturnType;
 
-				sb.AppendLine();
+                if (dec.functionParams != null) {
+                    foreach (var p in dec.functionParams) {
+                        FieldStructure s = new(p);
+                        functionParams.Add(s);
+                    }
+                }
+            }
 
-				if (!string.IsNullOrEmpty(comment))
-				{
-					sb.AppendLine("// " + comment);
-				}
+            internal string Write(IReadOnlyList<FieldStructure> classFields) {
+                StringBuilder sb = new();
 
-				if (isPrivate) sb.Append("private ");
-				else sb.Append("public ");
+                sb.AppendLine();
 
-				if (!isConstructor)
-				{
-					if (isStatic) sb.Append("static ");
-					sb.Append(functionReturnType + " ");
-				}
+                if (!string.IsNullOrEmpty(comment)) {
+                    sb.Append(WriteComment());
+                }
 
-				sb.Append(name + "(");
-				if (functionParams != null)
-				{
-					sb.Append(String.Join(',', functionParams.Select(x => x.type + " " + x.name)));
-				}
-				sb.AppendLine(")");
-				sb.AppendLine("{");
+                if (isPrivate) sb.Append("private ");
+                else sb.Append("public ");
 
-				if (!isConstructor)
-				{
-					sb.Append("throw new NotImplementedException();");
-				}
-				else if (functionParams != null)
-				{
-					foreach (var fParam in functionParams)
-					{
-						var matching = classFields
-							.FirstOrDefault(x => x.type.Equals(fParam.type) &&
-								(x.name.ToLower().Equals(fParam.name.ToLower().Replace("_", "")) ||
-								x.name.ToLower().Equals(fParam.name.ToLower())));
+                if (!isConstructor) {
+                    if (isStatic) sb.Append("static ");
+                    sb.Append(functionReturnType + " ");
+                }
 
-						if (matching != null)
-						{
-							sb.AppendLine(String.Format("this.{0} = {1};", matching.name, fParam.name));
-						}
-					}
-				}
+                sb.Append(name + "(");
+                if (functionParams != null) {
+                    sb.Append(String.Join(',', functionParams.Select(x => x.type + " " + x.name)));
+                }
+                sb.AppendLine(")");
+                sb.AppendLine("{");
 
-				sb.AppendLine("}");
+                if (!isConstructor) {
+                    sb.Append("throw new NotImplementedException();");
+                } else if (functionParams != null) {
+                    foreach (var fParam in functionParams) {
+                        var matching = classFields
+                            .FirstOrDefault(x => x.type.Equals(fParam.type) &&
+                                (x.name.ToLower().Equals(fParam.name.ToLower().Replace("_", "")) ||
+                                x.name.ToLower().Equals(fParam.name.ToLower())));
 
-				return sb.ToString();
-			}
-		}
-	}
+                        if (matching != null) {
+                            sb.AppendLine(String.Format("this.{0} = {1};", matching.name, fParam.name));
+                        }
+                    }
+                }
+
+                sb.AppendLine("}");
+
+                return sb.ToString();
+            }
+
+            internal string WriteComment() {
+                StringBuilder sb = new StringBuilder();
+
+                return sb.ToString();
+            }
+        }
+    }
 }
