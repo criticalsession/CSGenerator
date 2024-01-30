@@ -263,9 +263,23 @@ namespace CSGenerator
 				return sb.ToString();
 			}
 
-			internal static string WriteComment()
+			internal string WriteComment()
 			{
 				StringBuilder sb = new();
+
+				sb.AppendLine("/// <summary>");
+				sb.AppendLine("/// " + comment);
+				sb.AppendLine("/// </summary>");
+
+				foreach (var par in functionParams) {
+					sb.AppendLine("/// <param name=\"" + par.name + "\"></param>");
+				}
+
+				if (functionReturnType != null && functionReturnType != "" 
+					&& functionReturnType != "void" && functionReturnType != "null")
+				{
+					sb.AppendLine("/// <returns></returns>");
+				}
 
 				return sb.ToString();
 			}
