@@ -5,6 +5,9 @@ Age: int
 FullName: string
 Addresses: List<Address> //List of current and past addresses
 CurrentAddress <: Address //Returns the current address from a list of address assigned to this person
+	if (Addresses != null && Addresses.Length > 0) {
+		return Addresses.FirstOrDefault(a => a.IsActive);
+	}
 &GetAll(): List<Person>
 &Load(id: int): Person
 &Delete(id: int): void
@@ -20,6 +23,7 @@ countryId: int
 StartDate: DateTime
 EndDate: DateTime?
 IsActive <: bool //Checks if the address is still active (based on EndDate)
+	return !EndDate.HasValue;
 GetCountry(): Country
 Deactivate(): DateTime
 (street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): void

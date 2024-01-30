@@ -53,6 +53,7 @@ namespace CSGenerator
 
 			Dictionary<string, List<Declaration>> declarations = [];
 			declarations[currentClassPath] = [];
+			Declaration? previousDec = null;
 			for (int i = 2; i < lines.Length; i++)
 			{
 				var line = lines[i];
@@ -62,13 +63,30 @@ namespace CSGenerator
 					//new sub-class
 					currentClassPath = line.Replace("[", "").Replace("]", "").Trim();
 					declarations[currentClassPath] = [];
+					previousDec = null;
 					continue;
 				}
 
-				Declaration dec = new();
-				dec.parseDeclaration(line);
+				if (line.StartsWith('\t'))
+				{
+					if (previousDec == null)
+					{
+						throw new Exception("Attempting to add extras before declaration.");
+					}
 
-				declarations[currentClassPath].Add(dec);
+					// parse line of code
+					// append to previous declaration
+					line = line.Replace('\t', ' ').Trim();
+					previousDec.extras.Add(line);
+				}
+				else
+				{
+					Declaration dec = new();
+					dec.parseDeclaration(line);
+					declarations[currentClassPath].Add(dec);
+
+					previousDec = dec;
+				}
 			}
 
 			rootClass = ClassStructure.BuildStructure(rootClassName, declarations);

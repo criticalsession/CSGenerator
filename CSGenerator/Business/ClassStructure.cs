@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Buffers;
+using System.Text;
 
 namespace CSGenerator
 {
@@ -79,6 +80,7 @@ namespace CSGenerator
 			internal string comment;
 			internal bool isStatic;
 			internal bool isPrivate;
+			internal List<string> extras;
 
 			internal Base(Declaration dec)
 			{
@@ -86,6 +88,7 @@ namespace CSGenerator
 				comment = dec.comment;
 				isStatic = dec.isStatic;
 				isPrivate = dec.isPrivate;
+				extras = dec.extras;
 			}
 		}
 
@@ -143,7 +146,17 @@ namespace CSGenerator
 						}
 						else
 						{
-							sb.AppendLine("throw new NotImplementedException();");
+							if (extras.Count > 0)
+							{
+								foreach (string e in extras)
+								{
+									sb.AppendLine(e);
+								}
+							}
+							else
+							{
+								sb.AppendLine("throw new NotImplementedException();");
+							}
 						}
 
 						sb.AppendLine("}");
@@ -159,7 +172,17 @@ namespace CSGenerator
 						}
 						else
 						{
-							sb.AppendLine("throw new NotImplementedException();");
+							if (extras.Count > 0)
+							{
+								foreach (string e in extras)
+								{
+									sb.AppendLine(e);
+								}
+							}
+							else
+							{
+								sb.AppendLine("throw new NotImplementedException();");
+							}
 						}
 
 						sb.AppendLine("}");
@@ -240,7 +263,17 @@ namespace CSGenerator
 
 				if (!isConstructor)
 				{
-					sb.Append("throw new NotImplementedException();");
+					if (extras.Count > 0)
+					{
+						foreach (string e in extras)
+						{
+							sb.AppendLine(e);
+						}
+					}
+					else
+					{
+						sb.AppendLine("throw new NotImplementedException();");
+					}
 				}
 				else if (functionParams != null)
 				{

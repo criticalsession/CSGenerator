@@ -15,6 +15,7 @@ namespace CSGenerator
 		internal bool isConstructor;
 		internal string comment;
 		private bool _isFunction;
+		internal List<string> extras;
 
 		internal bool isFunction
 		{
@@ -49,6 +50,7 @@ namespace CSGenerator
 
 		internal Declaration()
 		{
+			extras = [];
 			name = "";
 			type = "";
 			comment = "";
