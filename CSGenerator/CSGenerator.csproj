@@ -22,4 +22,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\Amante\source\repos\csgenerator\CSGenerator\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\Amante\source\repos\csgenerator\CSGenerator\.editorconfig" />
+  </ItemGroup>
+
 </Project>
