@@ -14,11 +14,6 @@ namespace CSGenerator
 			return File.ReadAllLines(filePath);
 		}
 
-		internal static string ReadTemplate(string templateName)
-		{
-			return File.ReadAllText(getTemplatePath(templateName));
-		}
-
 		internal static string GetValueBetweenBrackets(string line)
 		{
 			if (!line.Contains('(') || !line.Contains(')'))
@@ -47,24 +42,6 @@ namespace CSGenerator
 		internal static string GetOutPath(string fileName)
 		{
 			return Path.Combine(GetOutDirectory(), fileName + ".cs");
-		}
-
-		private static string getTemplatePath(string templateName)
-		{
-			string exePath = Assembly.GetExecutingAssembly().Location;
-			string? exeDirectory = Path.GetDirectoryName(exePath);
-			if (String.IsNullOrEmpty(exeDirectory))
-			{
-				throw new Exception("Something went wrong while getting the exe directory.");
-			}
-			string templatePath = Path.Combine(exeDirectory, "templates", "template_" + templateName + ".txt");
-
-			if (!File.Exists(templatePath))
-			{
-				throw new Exception("Template '" + templateName + "' ('templates/template_" + templateName + ".txt') does not exist.");
-			}
-
-			return templatePath;
 		}
 
 		internal static void ValidateFunctionParam(string rawParam)

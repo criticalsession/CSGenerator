@@ -88,6 +88,7 @@ namespace CSGenerator
 				comment = dec.comment;
 				isStatic = dec.isStatic;
 				isPrivate = dec.isPrivate;
+				extras = [];
 			}
 		}
 

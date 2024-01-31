@@ -12,7 +12,7 @@ namespace CSGenerator
 				throw new Exception("Root class structure is null. This shouldn't happen.");
 			}
 
-			string mainTemplateString = Utils.ReadTemplate(p.templateName);
+			string mainTemplateString = Template.ReadTemplateText(p.templateName, Template.TemplateType.Root);
 			string t = "// Generated using CSGenerator v1.0: https://github.com/criticalsession/csgenerator" +
 				Environment.NewLine + mainTemplateString;
 			t = t.Replace("{{NAMESPACE}}", p.rootNamespace);
@@ -38,7 +38,7 @@ namespace CSGenerator
 
 		internal static string BuildClass(ClassStructure c, string templateName, bool isRoot = false)
 		{
-			string t = (isRoot ? "" : Environment.NewLine) + Utils.ReadTemplate(templateName + "_class");
+			string t = (isRoot ? "" : Environment.NewLine) + Template.ReadTemplateText(templateName, Template.TemplateType.Class);
 			t = t.Replace("{{CLASS_NAME}}", c.ClassName);
 
 			StringBuilder fields = new();
