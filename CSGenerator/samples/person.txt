@@ -18,7 +18,9 @@ CurrentAddress : Address //Returns the current address from a list of address as
 &Insert(data: Person): int
 AddAddress(street: string, houseNo: int, countryId: int, startDate: DateTime, endDate: DateTime?): Address //Add address to this person's list of addresses
 (): void
+	Addresses = new List<Address>();
 (age: int, firstName: string, lastName: string): void
+	Addresses = new List<Address>();
 
 [Person.Address]
 Street: string
@@ -40,8 +42,9 @@ CountryCode: string
 	get _countryCode
 	set _countryCode
 &GenerateId(seed: int):int
-(_id: int, _name: string, _countryCode: string): void //Instantiates a new country
 verifyCountryCode(): bool
+	return CountryCode.Length == 2;
+(_id: int, _name: string, _countryCode: string): void
 
 [Person.Contact]
 email: string

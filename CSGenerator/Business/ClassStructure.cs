@@ -342,6 +342,14 @@ namespace CSGenerator
 							sb.AppendLine(String.Format("this.{0} = {1};", matching.name, fParam.name));
 						}
 					}
+
+					if (extras != null && extras.Count > 0)
+					{
+						foreach (string e in extras.Where(p => p.type == ExtraData.DataType.MultiLine).Select(p => p.line))
+						{
+							sb.AppendLine(e);
+						}
+					}
 				}
 
 				sb.AppendLine("}");
