@@ -26,7 +26,7 @@ namespace CSGenerator
 			return line.Substring(first + 1, last - first - 1);
 		}
 
-		internal static string GetOutDirectory()
+		internal static string GetOutDirectory(string? outDir)
 		{
 			string exePath = Assembly.GetExecutingAssembly().Location;
 			string? exeDirectory = Path.GetDirectoryName(exePath);
@@ -34,14 +34,14 @@ namespace CSGenerator
 			{
 				throw new Exception("Something went wrong while getting the exe directory.");
 			}
-			string outPath = Path.Combine(exeDirectory, "out");
+			string outPath = Path.Combine(exeDirectory, outDir ?? "out");
 
 			return outPath;
 		}
 
-		internal static string GetOutPath(string fileName)
+		internal static string GetOutPath(string? outDir, string fileName)
 		{
-			return Path.Combine(GetOutDirectory(), fileName + ".cs");
+			return Path.Combine(GetOutDirectory(outDir ?? "out"), fileName + ".cs");
 		}
 
 		internal static void ValidateFunctionParam(string rawParam)

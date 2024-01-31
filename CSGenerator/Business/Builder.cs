@@ -26,10 +26,10 @@ namespace CSGenerator
 
 			t = t.Replace("{{CLASS}}", BuildClass(p.rootClass, p.templateName, isRoot: true));
 
-			if (!Directory.Exists(Utils.GetOutDirectory()))
-				Directory.CreateDirectory(Utils.GetOutDirectory());
+			if (!Directory.Exists(Utils.GetOutDirectory(p.settings?.OutDir)))
+				Directory.CreateDirectory(Utils.GetOutDirectory(p.settings?.OutDir));
 
-			string path = Utils.GetOutPath(p.rootClass.ClassName);
+			string path = Utils.GetOutPath(p.settings?.OutDir, p.rootClass.ClassName);
 			File.WriteAllText(path, t);
 
 			return path;
