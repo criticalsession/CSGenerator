@@ -33,6 +33,9 @@ namespace CSGenerator
 			catch (Exception e)
 			{
 				Console.WriteLine("An error has occurred: " + e.Message);
+#if DEBUG
+				Console.WriteLine(e.StackTrace);
+#endif
 				Console.WriteLine("Press [Enter] to exit.");
 			}
 
