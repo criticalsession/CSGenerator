@@ -1,1 +1,1 @@
-# CSGenerator v0.1
+# CodeConjure v1.0
