@@ -36,6 +36,14 @@
 			}
 		}
 
+		internal bool AddGeneratorHeader
+		{
+			get
+			{
+				return !settings.ContainsKey("addgeneratorheader") || bool.Parse(settings["addgeneratorheader"].Trim().ToLower());
+			}
+		}
+
 		internal void AddSetting(string key, string value)
 		{
 			settings[key.Trim().ToLower()] = value;

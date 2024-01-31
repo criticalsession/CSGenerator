@@ -9,6 +9,7 @@ namespace CSGenerator
 		internal string templateName = "";
 		internal ClassStructure? rootClass;
 		internal Settings? settings;
+		internal List<string> classes = [];
 
 		internal Parser(Settings settings)
 		{
@@ -64,6 +65,8 @@ namespace CSGenerator
 
 			string currentClassPath = rootClassName;
 
+			classes.Add(currentClassPath);
+
 			Dictionary<string, List<Declaration>> declarations = [];
 			declarations[currentClassPath] = [];
 			Declaration? previousDec = null;
@@ -75,6 +78,7 @@ namespace CSGenerator
 				{
 					//new sub-class
 					currentClassPath = line.Replace("[", "").Replace("]", "").Trim();
+					classes.Add(currentClassPath);
 					declarations[currentClassPath] = [];
 					previousDec = null;
 					continue;
