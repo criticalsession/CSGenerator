@@ -36,8 +36,7 @@ namespace CSGenerator
 				throw new Exception("No template declaration found. Usage example: @base will load template_base.txt.");
 			}
 
-			if (!lines[1].StartsWith('[') || !lines[1].EndsWith(']') ||
-				lines[1].Contains(':'))
+			if (!lines[1].StartsWith('[') || !lines[1].EndsWith(']') || lines[1].Contains(':'))
 			{
 				throw new Exception("No root class declaration found. Usage example: [Person] will create a Person root class.");
 			}
@@ -46,12 +45,20 @@ namespace CSGenerator
 			if (lines[1].Contains(','))
 			{
 				var d = rootDeclaration.Split(',');
-				rootNamespace = d[0].Trim();
+				rootNamespace = (settings?.BaseNamespace ?? "") + d[0].Trim();
 				rootClassName = d[1].Trim();
 			}
 			else
 			{
-				rootNamespace = "NOT_SET";
+				if (!String.IsNullOrEmpty(settings?.BaseNamespace))
+				{
+					rootNamespace = settings.BaseNamespace[..(settings.BaseNamespace.Length - 1)];
+				}
+				else
+				{
+					rootNamespace = "NOT_SET";
+				}
+
 				rootClassName = rootDeclaration;
 			}
 

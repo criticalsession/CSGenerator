@@ -41,15 +41,22 @@ CountryCode: string
 	set _countryCode
 &GenerateId(seed: int):int
 (_id: int, _name: string, _countryCode: string): void //Instantiates a new country
-_buildCountryCode(): string
+verifyCountryCode(): bool
 
 [Person.Contact]
+email: string
 Email: string
+	get email
 	set
-	if (value.Length > 0) Email = value;
+	if (value.Length > 0) email = value;
 HomePhone: string
 WorkPhone: string
 MobilePhone: string
 IsAnyPhoneSet: bool
 	get !string.IsNullOrEmpty(HomePhone) || !string.IsNullOrEmpty(WorkPhone) || !string.IsNullOrEmpty(MobilePhone)
 (_email: string, _homePhone: string, _workPhone: string, _mobilePhone: string): void
+ClearAll() : void
+	HomePhone = "";
+	WorkPhone = "";
+	MobilePhone = "";
+	email = "";

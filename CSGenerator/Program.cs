@@ -19,9 +19,11 @@ namespace CSGenerator
 				Settings settings = new();
 				settings.PopulateSettings();
 
+				Parser parser;
+				Builder builder;
 				foreach (string s in args)
 				{
-					Parser parser = new(settings);
+					parser = new(settings);
 
 					if (settings.Verbose)
 					{
@@ -30,7 +32,7 @@ namespace CSGenerator
 
 					parser.Parse(s);
 
-					Builder builder = new();
+					builder = new();
 					Builder.Build(parser);
 				}
 

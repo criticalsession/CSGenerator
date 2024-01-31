@@ -8,7 +8,7 @@
 		{
 			get
 			{
-				return !settings.ContainsKey("verbose") || bool.Parse(settings["verbose"]);
+				return !settings.ContainsKey("verbose") || bool.Parse(settings["verbose"].Trim().ToLower());
 			}
 		}
 
@@ -16,7 +16,7 @@
 		{
 			get
 			{
-				return settings.TryGetValue("outdir", out string? outDir) ? outDir ?? "out" : "out";
+				return settings.TryGetValue("outdir", out string? outDir) ? outDir.Trim().ToLower() ?? "out" : "out";
 			}
 		}
 
@@ -38,10 +38,7 @@
 
 		internal void AddSetting(string key, string value)
 		{
-			key = key.ToLower().Trim();
-			value = value.ToLower().Trim();
-
-			settings[key] = value;
+			settings[key.Trim().ToLower()] = value;
 		}
 
 		internal void PopulateSettings()
