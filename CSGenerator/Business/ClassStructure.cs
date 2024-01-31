@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Xml.Serialization;
 
 namespace CSGenerator
 {
@@ -268,6 +269,21 @@ namespace CSGenerator
 						functionParams.Add(s);
 					}
 				}
+
+				ParseExtras(dec.extras);
+			}
+
+			private void ParseExtras(List<string> dExtras)
+			{
+				if (dExtras.Count == 0) return;
+
+				List<ExtraData> modifiedExtras = [];
+				foreach (string extra in dExtras)
+				{
+					modifiedExtras.Add(new ExtraData(extra, ExtraData.DataType.MultiLine));
+				}
+
+				extras = modifiedExtras;
 			}
 
 			internal string Write(IReadOnlyList<FieldStructure> classFields)
@@ -302,7 +318,7 @@ namespace CSGenerator
 				{
 					if (extras != null && extras.Count > 0)
 					{
-						foreach (string e in extras.Select(p => p.line))
+						foreach (string e in extras.Where(p => p.type == ExtraData.DataType.MultiLine).Select(p => p.line))
 						{
 							sb.AppendLine(e);
 						}
