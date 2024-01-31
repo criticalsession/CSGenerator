@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 
 namespace CSGenerator
 {
@@ -11,6 +6,11 @@ namespace CSGenerator
 	{
 		internal static string[] ReadFile(string filePath)
 		{
+			if (!File.Exists(filePath))
+			{
+				throw new Exception("Could not find file: " + filePath);
+			}
+
 			return File.ReadAllLines(filePath);
 		}
 
@@ -53,6 +53,18 @@ namespace CSGenerator
 					throw new Exception("Function parameter cannot contain brackets: " + rawParam);
 				}
 			}
+		}
+
+		internal static string GetExeDirectory()
+		{
+			string exePath = Assembly.GetExecutingAssembly().Location;
+			string? exeDirectory = Path.GetDirectoryName(exePath);
+			if (String.IsNullOrEmpty(exeDirectory))
+			{
+				throw new Exception("Something went wrong while getting the exe directory.");
+			}
+
+			return exeDirectory;
 		}
 	}
 }

@@ -11,6 +11,9 @@
     <None Update="samples\person.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="settings.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="templates\sample\class.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

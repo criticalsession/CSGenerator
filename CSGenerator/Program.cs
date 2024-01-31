@@ -16,19 +16,31 @@ namespace CSGenerator
 #endif
 				}
 
+				Settings settings = new();
+				settings.PopulateSettings();
+
 				foreach (string s in args)
 				{
-					Parser parser = new();
+					Parser parser = new(settings);
 
-					Console.WriteLine("Generating class for '{0}'", s);
+					if (settings.Verbose)
+					{
+						Console.WriteLine("Generating class for '{0}'", s);
+					}
+
 					parser.Parse(s);
 
 					Builder builder = new();
 					Builder.Build(parser);
 				}
 
-				Console.WriteLine();
-				Console.WriteLine("Done.");
+				if (settings.Verbose)
+				{
+					Console.WriteLine();
+					Console.WriteLine("Done.");
+
+					Console.ReadLine();
+				}
 			}
 			catch (Exception e)
 			{
@@ -37,9 +49,9 @@ namespace CSGenerator
 				Console.WriteLine(e.StackTrace);
 #endif
 				Console.WriteLine("Press [Enter] to exit.");
-			}
 
-			Console.ReadLine();
+				Console.ReadLine();
+			}
 		}
 	}
 }

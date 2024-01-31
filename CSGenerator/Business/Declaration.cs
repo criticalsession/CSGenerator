@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace CSGenerator
+﻿namespace CSGenerator
 {
 	internal class Declaration
 	{

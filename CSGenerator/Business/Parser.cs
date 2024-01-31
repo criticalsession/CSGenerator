@@ -8,6 +8,12 @@ namespace CSGenerator
 		internal string rootNamespace = "";
 		internal string templateName = "";
 		internal ClassStructure? rootClass;
+		internal Settings? settings;
+
+		internal Parser(Settings settings)
+		{
+			this.settings = settings;
+		}
 
 		internal void Parse(string filePath)
 		{

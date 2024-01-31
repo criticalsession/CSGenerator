@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CSGenerator
+﻿namespace CSGenerator
 {
 	internal static class Template
 	{
@@ -28,15 +21,9 @@ namespace CSGenerator
 			return File.ReadAllText(filePath);
 		}
 
-
 		private static string getTemplateDir(string templateName)
 		{
-			string exePath = Assembly.GetExecutingAssembly().Location;
-			string? exeDirectory = Path.GetDirectoryName(exePath);
-			if (String.IsNullOrEmpty(exeDirectory))
-			{
-				throw new Exception("Something went wrong while getting the exe directory.");
-			}
+			string exeDirectory = Utils.GetExeDirectory();
 
 			string templateDirectory = Path.Combine(exeDirectory, "templates", templateName);
 			if (!Directory.Exists(templateDirectory))
