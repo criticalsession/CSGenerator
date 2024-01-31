@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace CSGenerator
+namespace CodeConjure
 {
 	internal static class Utils
 	{

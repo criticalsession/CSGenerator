@@ -1,6 +1,6 @@
-﻿using static CSGenerator.Utils;
+﻿using static CodeConjure.Utils;
 
-namespace CSGenerator
+namespace CodeConjure
 {
 	internal class Parser
 	{

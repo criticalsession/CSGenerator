@@ -1,4 +1,4 @@
-﻿namespace CSGenerator
+﻿namespace CodeConjure
 {
 	internal static class Template
 	{

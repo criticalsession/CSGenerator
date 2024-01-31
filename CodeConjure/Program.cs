@@ -1,5 +1,5 @@
 ﻿
-namespace CSGenerator
+namespace CodeConjure
 {
 	internal class Program
 	{
@@ -10,7 +10,7 @@ namespace CSGenerator
 				if (args.Length == 0)
 				{
 #if DEBUG
-					args = ["./samples/person.txt", "./samples/country.txt"];
+					args = ["./samples/person.txt"];
 #else
                     throw new Exception("At least one file is required.");
 #endif

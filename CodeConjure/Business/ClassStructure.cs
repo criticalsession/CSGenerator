@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Xml.Serialization;
 
-namespace CSGenerator
+namespace CodeConjure
 {
 	internal class ClassStructure
 	{

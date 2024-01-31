@@ -23,11 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EditorConfigFiles Remove="C:\Users\Amante\source\repos\csgenerator\CSGenerator\.editorconfig" />
+    <EditorConfigFiles Remove="C:\Users\Amante\source\repos\CodeConjure\CodeConjure\.editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="C:\Users\Amante\source\repos\csgenerator\CSGenerator\.editorconfig" />
+    <None Include="C:\Users\Amante\source\repos\CodeConjure\CodeConjure\.editorconfig" />
   </ItemGroup>
 
 </Project>

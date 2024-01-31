@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace CSGenerator
+namespace CodeConjure
 {
 	internal class Builder
 	{
@@ -25,7 +25,7 @@ namespace CSGenerator
 					header.AppendLine("// Generated on " + DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
 				}
 
-				header.AppendLine("// Using CSGenerator v1.0 (https://github.com/criticalsession/csgenerator)");
+				header.AppendLine("// Using CodeConjure v1.0 (https://github.com/criticalsession/codeconjure)");
 				header.AppendLine();
 			}
 
