@@ -22,47 +22,14 @@ namespace CodeConjure
 				.Where(p => !string.IsNullOrEmpty(p) && !p.Trim().StartsWith("//"))
 				.ToArray();
 
-			if (lines.Length <= 2)
-			{
-				throw new Exception("This file is empty.");
-			}
+			VerifyHeader(lines);
+			GetRootNamespaceAndClass(lines);
 
-			if (lines[0].StartsWith('@'))
-			{
-				templateName = lines[0].Replace("@", "").Trim();
-			}
+			rootClass = ClassStructure.BuildStructure(rootClassName, ParseClasses(lines));
+		}
 
-			if (string.IsNullOrEmpty(templateName))
-			{
-				throw new Exception("No template declaration found. Usage example: @base will load template_base.txt.");
-			}
-
-			if (!lines[1].StartsWith('[') || !lines[1].EndsWith(']') || lines[1].Contains(':'))
-			{
-				throw new Exception("No root class declaration found. Usage example: [Person] will create a Person root class.");
-			}
-
-			string rootDeclaration = lines[1].Replace("[", "").Replace("]", "").Trim();
-			if (lines[1].Contains(','))
-			{
-				var d = rootDeclaration.Split(',');
-				rootNamespace = (settings?.BaseNamespace ?? "") + d[0].Trim();
-				rootClassName = d[1].Trim();
-			}
-			else
-			{
-				if (!String.IsNullOrEmpty(settings?.BaseNamespace))
-				{
-					rootNamespace = settings.BaseNamespace[..(settings.BaseNamespace.Length - 1)];
-				}
-				else
-				{
-					rootNamespace = "NOT_SET";
-				}
-
-				rootClassName = rootDeclaration;
-			}
-
+		private Dictionary<string, List<Declaration>> ParseClasses(string[] lines)
+		{
 			string currentClassPath = rootClassName;
 
 			classes.Add(currentClassPath);
@@ -81,6 +48,7 @@ namespace CodeConjure
 					classes.Add(currentClassPath);
 					declarations[currentClassPath] = [];
 					previousDec = null;
+
 					continue;
 				}
 
@@ -106,7 +74,55 @@ namespace CodeConjure
 				}
 			}
 
-			rootClass = ClassStructure.BuildStructure(rootClassName, declarations);
+			return declarations;
+		}
+
+		private void GetRootNamespaceAndClass(string[] lines)
+		{
+			string rootClassLine = lines[1];
+			string rootDeclaration = rootClassLine.Replace('[', ' ').Replace(']', ' ').Trim();
+			if (rootClassLine.Contains('.'))
+			{
+				int n = rootDeclaration.LastIndexOf('.');
+				rootNamespace = (settings?.BaseNamespace ?? "") + rootDeclaration[..n];
+				rootClassName = rootDeclaration[(n + 1)..];
+			}
+			else
+			{
+				if (!String.IsNullOrEmpty(settings?.BaseNamespace))
+				{
+					rootNamespace = settings.BaseNamespace[..(settings.BaseNamespace.Length - 1)];
+				}
+				else
+				{
+					rootNamespace = "NOT_SET";
+				}
+
+				rootClassName = rootDeclaration;
+			}
+		}
+
+		private void VerifyHeader(string[] lines)
+		{
+			if (lines.Length <= 2)
+			{
+				throw new Exception("This file is empty.");
+			}
+
+			if (lines[0].StartsWith('@'))
+			{
+				templateName = lines[0].Replace("@", "").Trim();
+			}
+
+			if (string.IsNullOrEmpty(templateName))
+			{
+				throw new Exception("No template declaration found. Usage example: @base will load template_base.txt.");
+			}
+
+			if (!lines[1].StartsWith('[') || !lines[1].EndsWith(']') || lines[1].Contains(':'))
+			{
+				throw new Exception("No root class declaration found. Usage example: [Person] will create a Person root class.");
+			}
 		}
 	}
 }

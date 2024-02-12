@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection.Metadata;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace CodeConjure
@@ -46,7 +47,6 @@ namespace CodeConjure
 		internal static ClassStructure BuildStructure(string className, Dictionary<string, List<Declaration>> allDecs)
 		{
 			ClassStructure c = new();
-
 			List<Declaration> decs = allDecs[className];
 
 			c.ClassName = className.Split('.').Last();
@@ -57,7 +57,7 @@ namespace CodeConjure
 
 			foreach (var m in decs.Where(p => p.isFunction))
 			{
-				if (m.isConstructor) m.name = c.ClassName;
+				if (m.isConstructor) m.fieldDetails.name = c.ClassName;
 				c.methods.Add(new MethodStructure(m));
 			}
 
@@ -84,10 +84,19 @@ namespace CodeConjure
 
 			internal Base(Declaration dec)
 			{
-				name = dec.name;
+				name = dec.fieldDetails.name;
 				comment = dec.comment;
-				isStatic = dec.isStatic;
-				isPrivate = dec.isPrivate;
+				isStatic = dec.hasFlag(Declaration.Flag.Static);
+				isPrivate = dec.hasFlag(Declaration.Flag.Private);
+				extras = [];
+			}
+
+			internal Base()
+			{
+				name = "";
+				comment = "";
+				isStatic = false;
+				isPrivate = false;
 				extras = [];
 			}
 		}
@@ -99,9 +108,16 @@ namespace CodeConjure
 
 			internal FieldStructure(Declaration dec) : base(dec)
 			{
-				type = dec.type;
+				type = dec.fieldDetails.type;
 				extras = [];
 				ParseExtras(dec.extras);
+			}
+
+			internal FieldStructure(FieldDetails fd) : base()
+			{
+				name = fd.name;
+				type = fd.type;
+				isProperty = false;
 			}
 
 			private void ParseExtras(List<string> dExtras)
@@ -255,15 +271,16 @@ namespace CodeConjure
 
 			internal MethodStructure(Declaration dec) : base(dec)
 			{
+				if (dec.functionDetails == null) throw new Exception("Expected function but functionDetails is null.");
 				isConstructor = dec.isConstructor;
 				functionReturnType =
-					String.IsNullOrEmpty(dec.functionReturnType) || dec.functionReturnType.Equals("null", StringComparison.CurrentCultureIgnoreCase)
+					String.IsNullOrEmpty(dec.functionDetails.returnType) || dec.functionDetails.returnType.Equals("null", StringComparison.CurrentCultureIgnoreCase)
 					? "void"
-					: dec.functionReturnType;
+					: dec.functionDetails.returnType;
 
-				if (dec.functionParams != null)
+				if (dec.functionDetails.parameters != null)
 				{
-					foreach (var p in dec.functionParams)
+					foreach (var p in dec.functionDetails.parameters)
 					{
 						FieldStructure s = new(p);
 						functionParams.Add(s);

@@ -2,39 +2,33 @@
 {
 	internal class Declaration
 	{
-		internal string name;
-		internal string type;
-		internal bool isStatic;
-		internal bool isPrivate;
-		internal bool isGetter;
-		internal bool isSetter;
-		internal List<Declaration>? functionParams;
-		internal string? functionReturnType;
-		internal bool isConstructor;
+		internal enum Flag
+		{
+			Static,
+			Private,
+			Getter,
+			Setter
+		}
+
+		internal List<Flag> flags = [];
+
 		internal string comment;
-		private bool _isFunction;
+
+		internal FunctionDetails? functionDetails;
+		internal FieldDetails fieldDetails;
+
 		internal List<string> extras;
 
 		internal bool isFunction
 		{
 			get
 			{
-				return _isFunction;
+				return functionDetails != null;
 			}
 			set
 			{
-				_isFunction = value;
-
-				if (value)
-				{
-					functionParams = [];
-					functionReturnType = "null";
-				}
-				else
-				{
-					functionParams = null;
-					functionReturnType = null;
-				}
+				if (!value) functionDetails = null;
+				else functionDetails = new FunctionDetails();
 			}
 		}
 
@@ -42,22 +36,52 @@
 		{
 			get
 			{
-				return isSetter || isGetter;
+				return hasFlag(Flag.Setter) || hasFlag(Flag.Getter);
+			}
+		}
+
+		internal bool isConstructor
+		{
+			get
+			{
+				return (this.functionDetails != null && this.functionDetails.isConstructor);
+			}
+		}
+
+		internal bool hasFlag(Flag flag)
+		{
+			return flags.Contains(flag);
+		}
+
+		internal void addFlag(Flag flag)
+		{
+			if (!hasFlag(flag))
+			{
+				flags.Add(flag);
+			}
+		}
+
+		internal void removeFlag(Flag flag)
+		{
+			if (hasFlag(flag))
+			{
+				flags.Remove(flag);
 			}
 		}
 
 		internal Declaration()
 		{
-			extras = [];
-			name = "";
-			type = "";
 			comment = "";
-			isStatic = false;
-			isPrivate = false;
-			isConstructor = false;
-			isSetter = false;
-			isGetter = false;
-			_isFunction = false;
+			extras = [];
+			flags = [];
+
+			isFunction = false;
+
+			fieldDetails = new FieldDetails()
+			{
+				name = "",
+				type = ""
+			};
 		}
 
 		internal void parseDeclaration(string line)
@@ -73,13 +97,12 @@
 
 			if (key.Contains('(') && key.Contains(')'))
 			{
-				this.isFunction = true;
-				this.functionParams = [];
-
+				functionDetails = new FunctionDetails();
+				
 				string functionName = key;
 				if (key.StartsWith('('))
 				{
-					this.isConstructor = true;
+					functionDetails.isConstructor = true;
 					functionName = "";
 				}
 				else
@@ -101,7 +124,7 @@
 
 					Declaration param = new();
 					param.parseDeclaration(rawParam);
-					this.functionParams.Add(param);
+					functionDetails.parameters.Add(param.fieldDetails);
 				}
 
 				key = functionName;
@@ -109,14 +132,14 @@
 
 			if (key.StartsWith('&'))
 			{
-				this.isStatic = true;
+				addFlag(Flag.Static);
 				key = key[1..];
 			}
 
-			if (!this.isConstructor && (char.IsLower(key[0]) || key[0] == '_'))
+			if (!isConstructor && (char.IsLower(key[0]) || key[0] == '_'))
 			{
-				this.isPrivate = true;
-				if (this.isFunction)
+				addFlag(Flag.Private);
+				if (isFunction)
 				{
 					key = key.Replace('_', ' ').Trim();
 				}
@@ -124,19 +147,14 @@
 
 			if (val.Contains("//"))
 			{
-				this.comment = val[val.IndexOf("//")..].Replace("//", "").Trim();
+				comment = val[val.IndexOf("//")..].Replace("//", "").Trim();
 				val = val[..val.IndexOf("//")].Trim();
 			}
 
-			this.name = key;
-			if (this.isFunction)
-			{
-				this.functionReturnType = val;
-			}
-			else
-			{
-				this.type = val;
-			}
+			fieldDetails = new FieldDetails();
+			fieldDetails.name = key;
+			if (isFunction && functionDetails != null) functionDetails.returnType = val;
+			else fieldDetails.type = val;
 		}
 	}
 }

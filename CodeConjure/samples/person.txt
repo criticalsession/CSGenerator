@@ -1,6 +1,6 @@
 ﻿// Sample: Person class with Address sub-class
 @sample
-[CodeConjure.Samples, Person]
+[CodeConjure.Samples.Person]
 Age: int
 firstName: string
 lastName: string
